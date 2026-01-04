@@ -1,19 +1,19 @@
 @extends('layouts.app')
 
-@section('title', 'Data Permohonan')
+@section('title', 'Data Pengajuan Layanan')
 
 @section('content')
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h2">
         @if(auth()->user()->isWarga())
-            Permohonan Saya
+            Pengajuan Saya
         @else
-            Data Permohonan
+            Data Pengajuan Layanan
         @endif
     </h1>
     <div class="btn-toolbar mb-2 mb-md-0">
         <a href="{{ route('permohonan.create') }}" class="btn btn-success btn-sm">
-            <i class="fas fa-plus me-1"></i>Ajukan Permohonan
+            <i class="fas fa-plus me-1"></i>Ajukan Layanan
         </a>
     </div>
 </div>
@@ -59,7 +59,7 @@
 <!-- Data Permohonan -->
 <div class="card shadow-sm">
     <div class="card-header py-2">
-        <h6 class="m-0 fw-bold text-primary">Daftar Permohonan</h6>
+        <h6 class="m-0 fw-bold text-primary">Daftar Pengajuan Layanan</h6>
     </div>
     <div class="card-body p-0">
         @if($permohonans->count() > 0)
@@ -107,6 +107,8 @@
                             <td>
                                 @php
                                     $statusClass = [
+                                        'pending' => 'bg-warning',
+                                        'menunggu_persetujuan_kades' => 'bg-info',
                                         'baru' => 'bg-warning',
                                         'diproses' => 'bg-primary',
                                         'ditolak' => 'bg-danger', 
@@ -152,13 +154,13 @@
                 <i class="fas fa-file-alt fa-2x text-muted mb-3"></i>
                 <p class="text-muted mb-2">
                     @if(auth()->user()->isWarga())
-                        Belum ada permohonan.
+                        Belum ada pengajuan.
                     @else
-                        Belum ada data permohonan.
+                        Belum ada data pengajuan.
                     @endif
                 </p>
                 <a href="{{ route('permohonan.create') }}" class="btn btn-success btn-sm">
-                    <i class="fas fa-plus me-1"></i>Ajukan Permohonan Pertama
+                    <i class="fas fa-plus me-1"></i>Ajukan Layanan Pertama
                 </a>
             </div>
         @endif

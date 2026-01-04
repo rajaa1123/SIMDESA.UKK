@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIMDESA - Sistem Informasi Manajemen Desa</title>
+    <title>SIMDESA - Sistem Informasi Desa SIDOKARE</title>
     
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -19,36 +19,61 @@
             box-sizing: border-box;
         }
         
+        :root {
+            --primary-green: #2d7d3e;
+            --secondary-green: #4caf50;
+            --light-green: #81c784;
+            --dark-green: #1b5e20;
+            --accent-yellow: #fdd835;
+            --white: #ffffff;
+            --light-bg: #f1f8e9;
+        }
+        
         body {
             font-family: 'Poppins', sans-serif;
             overflow-x: hidden;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            background: var(--light-bg);
         }
         
-        /* Navbar */
+        /* Navbar dengan tema hijau desa */
         .navbar {
-            background: rgba(255, 255, 255, 0.95) !important;
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%) !important;
             backdrop-filter: blur(10px);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(45, 125, 62, 0.3);
+            padding: 15px 0;
         }
         
         .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
             font-weight: 700;
-            font-size: 1.5rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-size: 1.4rem;
+            color: white !important;
+        }
+        
+        .logo-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .logo-sidoarjo {
+            height: 50px;
+            width: auto;
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.2));
         }
         
         .nav-link {
             font-weight: 500;
-            color: #333 !important;
+            color: rgba(255, 255, 255, 0.9) !important;
             margin: 0 10px;
             transition: all 0.3s ease;
             position: relative;
+        }
+        
+        .nav-link:hover {
+            color: var(--accent-yellow) !important;
         }
         
         .nav-link::after {
@@ -56,9 +81,9 @@
             position: absolute;
             width: 0;
             height: 2px;
-            bottom: 0;
+            bottom: -5px;
             left: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--accent-yellow);
             transition: all 0.3s ease;
             transform: translateX(-50%);
         }
@@ -67,25 +92,27 @@
             width: 100%;
         }
         
-        .btn-primary-custom {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .btn-village-primary {
+            background: var(--accent-yellow);
             border: none;
             padding: 10px 30px;
             border-radius: 50px;
             font-weight: 600;
-            color: white;
+            color: var(--dark-green);
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 15px rgba(253, 216, 53, 0.4);
         }
         
-        .btn-primary-custom:hover {
+        .btn-village-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+            box-shadow: 0 6px 20px rgba(253, 216, 53, 0.6);
+            background: #ffeb3b;
+            color: var(--dark-green);
         }
         
-        .btn-outline-custom {
-            border: 2px solid #667eea;
-            color: #667eea;
+        .btn-village-outline {
+            border: 2px solid white;
+            color: white;
             padding: 10px 30px;
             border-radius: 50px;
             font-weight: 600;
@@ -93,20 +120,86 @@
             transition: all 0.3s ease;
         }
         
-        .btn-outline-custom:hover {
-            background: #667eea;
-            color: white;
+        .btn-village-outline:hover {
+            background: white;
+            color: var(--primary-green);
             transform: translateY(-2px);
         }
         
-        /* Hero Section */
+        /* Hero Section dengan desain sawah dan desa */
         .hero-section {
             min-height: 100vh;
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
             display: flex;
             align-items: center;
-            padding: 100px 0 80px;
+            padding: 120px 0 80px;
             position: relative;
             overflow: hidden;
+        }
+        
+        /* Ilustrasi sawah animasi */
+        .rice-field-pattern {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40%;
+            background: 
+                repeating-linear-gradient(
+                    90deg,
+                    rgba(45, 125, 62, 0.3) 0px,
+                    rgba(76, 175, 80, 0.2) 50px,
+                    rgba(45, 125, 62, 0.3) 100px
+                );
+            opacity: 0.5;
+        }
+        
+        .village-clouds {
+            position: absolute;
+            width: 100px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 100px;
+            animation: float-cloud 20s infinite linear;
+        }
+        
+        .village-clouds::before,
+        .village-clouds::after {
+            content: '';
+            position: absolute;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 100px;
+        }
+        
+        .village-clouds::before {
+            width: 50px;
+            height: 50px;
+            top: -25px;
+            left: 10px;
+        }
+        
+        .village-clouds::after {
+            width: 60px;
+            height: 60px;
+            top: -30px;
+            right: 10px;
+        }
+        
+        .village-clouds-1 {
+            top: 10%;
+            left: -100px;
+        }
+        
+        .village-clouds-2 {
+            top: 20%;
+            left: -150px;
+            animation-delay: 5s;
+        }
+        
+        @keyframes float-cloud {
+            to {
+                transform: translateX(calc(100vw + 200px));
+            }
         }
         
         .hero-content {
@@ -126,7 +219,7 @@
         }
         
         .hero-title {
-            font-size: 4rem;
+            font-size: 3.5rem;
             font-weight: 800;
             color: white;
             margin-bottom: 20px;
@@ -135,52 +228,23 @@
         }
         
         .hero-subtitle {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             color: rgba(255, 255, 255, 0.95);
             margin-bottom: 40px;
             font-weight: 300;
+            max-width: 600px;
         }
         
         .hero-buttons .btn {
-            margin: 0 10px;
+            margin: 10px 10px 10px 0;
             padding: 15px 40px;
             font-size: 1.1rem;
         }
         
-        .btn-white-custom {
-            background: white;
-            color: #667eea;
-            border: none;
-            padding: 15px 40px;
-            border-radius: 50px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
-        }
-        
-        .btn-white-custom:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(255, 255, 255, 0.5);
-            color: #667eea;
-        }
-        
-        .btn-outline-white {
-            border: 2px solid white;
-            color: white;
-            background: transparent;
-            padding: 15px 40px;
-            border-radius: 50px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-outline-white:hover {
-            background: white;
-            color: #667eea;
-            transform: translateY(-2px);
-        }
-        
-        .hero-image {
+        /* Hero illustration - Desa */
+        .hero-illustration {
+            position: relative;
+            height: 450px;
             animation: float 3s ease-in-out infinite;
         }
         
@@ -193,56 +257,79 @@
             }
         }
         
-        .hero-image img {
-            max-width: 100%;
-            filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.3));
-        }
-        
-        /* Floating Shapes Background */
-        .shape {
+        .village-house {
             position: absolute;
+            width: 120px;
+            height: 100px;
+        }
+        
+        .house-base {
+            width: 100%;
+            height: 70%;
+            background: #8d6e63;
+            border-radius: 5px;
+            position: absolute;
+            bottom: 0;
+        }
+        
+        .house-roof {
+            width: 0;
+            height: 0;
+            border-left: 70px solid transparent;
+            border-right: 70px solid transparent;
+            border-bottom: 50px solid #d32f2f;
+            position: absolute;
+            top: -20px;
+            left: -10px;
+        }
+        
+        .house-door {
+            width: 30px;
+            height: 40px;
+            background: #5d4037;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 5px 5px 0 0;
+        }
+        
+        .house-window {
+            width: 20px;
+            height: 20px;
+            background: #ffeb3b;
+            position: absolute;
+            top: 20px;
+            border-radius: 3px;
+        }
+        
+        .window-left {
+            left: 15px;
+        }
+        
+        .window-right {
+            right: 15px;
+        }
+        
+        .tree {
+            position: absolute;
+        }
+        
+        .tree-trunk {
+            width: 15px;
+            height: 40px;
+            background: #8d6e63;
+            margin: 0 auto;
+        }
+        
+        .tree-leaves {
+            width: 60px;
+            height: 60px;
+            background: var(--secondary-green);
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            animation: float-shape 15s ease-in-out infinite;
-        }
-        
-        .shape-1 {
-            width: 300px;
-            height: 300px;
-            top: 10%;
-            left: 5%;
-            animation-delay: 0s;
-        }
-        
-        .shape-2 {
-            width: 200px;
-            height: 200px;
-            top: 60%;
-            right: 10%;
-            animation-delay: 2s;
-        }
-        
-        .shape-3 {
-            width: 150px;
-            height: 150px;
-            bottom: 20%;
-            left: 15%;
-            animation-delay: 4s;
-        }
-        
-        @keyframes float-shape {
-            0%, 100% {
-                transform: translateY(0px) translateX(0px);
-            }
-            25% {
-                transform: translateY(-30px) translateX(30px);
-            }
-            50% {
-                transform: translateY(-60px) translateX(-30px);
-            }
-            75% {
-                transform: translateY(-30px) translateX(-60px);
-            }
+            position: absolute;
+            top: -40px;
+            left: -22px;
         }
         
         /* Features Section */
@@ -256,7 +343,7 @@
             font-weight: 700;
             text-align: center;
             margin-bottom: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -282,15 +369,15 @@
         
         .feature-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.2);
-            border-color: #667eea;
+            box-shadow: 0 15px 40px rgba(45, 125, 62, 0.2);
+            border-color: var(--secondary-green);
         }
         
         .feature-icon {
             width: 80px;
             height: 80px;
             margin: 0 auto 25px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
             border-radius: 20px;
             display: flex;
             align-items: center;
@@ -316,16 +403,30 @@
             line-height: 1.7;
         }
         
-        /* Stats Section */
+        /* Stats Section dengan background sawah */
         .stats-section {
             padding: 80px 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
             color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stats-section::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50" font-size="80" opacity="0.05">🌾</text></svg>');
+            background-size: 100px 100px;
+            opacity: 0.1;
         }
         
         .stat-card {
             text-align: center;
             padding: 30px;
+            position: relative;
+            z-index: 1;
         }
         
         .stat-number {
@@ -333,18 +434,19 @@
             font-weight: 800;
             margin-bottom: 10px;
             text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            color: var(--accent-yellow);
         }
         
         .stat-label {
             font-size: 1.1rem;
-            opacity: 0.9;
+            opacity: 0.95;
             font-weight: 300;
         }
         
         /* CTA Section */
         .cta-section {
             padding: 80px 0;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: linear-gradient(135deg, var(--secondary-green) 0%, var(--light-green) 100%);
             text-align: center;
             color: white;
         }
@@ -353,6 +455,7 @@
             font-size: 3rem;
             font-weight: 700;
             margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
         
         .cta-text {
@@ -363,7 +466,7 @@
         
         /* Footer */
         .footer {
-            background: #1a1a2e;
+            background: var(--dark-green);
             color: white;
             padding: 60px 0 30px;
         }
@@ -383,7 +486,7 @@
         }
         
         .footer-link:hover {
-            color: white;
+            color: var(--accent-yellow);
             padding-left: 10px;
         }
         
@@ -401,8 +504,8 @@
         }
         
         .social-icons a:hover {
-            background: white;
-            color: #667eea;
+            background: var(--accent-yellow);
+            color: var(--dark-green);
             transform: translateY(-3px);
         }
         
@@ -420,12 +523,12 @@
             }
             
             .hero-subtitle {
-                font-size: 1.1rem;
+                font-size: 1rem;
             }
             
             .hero-buttons .btn {
-                padding: 12px 30px;
-                margin: 5px 0;
+                padding: 12px 25px;
+                font-size: 1rem;
             }
             
             .section-title {
@@ -435,6 +538,14 @@
             .stat-number {
                 font-size: 2.5rem;
             }
+            
+            .logo-sidoarjo {
+                height: 35px;
+            }
+            
+            .navbar-brand {
+                font-size: 1.1rem;
+            }
         }
     </style>
 </head>
@@ -443,15 +554,21 @@
     <nav class="navbar navbar-expand-lg fixed-top">
         <div class="container">
             <a class="navbar-brand" href="/">
-                <i class="fas fa-building me-2"></i>SIMDESA
+                <div class="logo-container">
+                    <img src="{{ asset('images/logo-sidoarjo.png') }}" alt="Logo Kabupaten Sidoarjo" class="logo-sidoarjo">
+                    <div>
+                        <div style="font-size: 0.9rem; opacity: 0.9;">DESA SIDOKARE</div>
+                        <div style="font-size: 0.7rem; opacity: 0.8; font-weight: 400;">Kab. Sidoarjo</div>
+                    </div>
+                </div>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" style="border-color: white;">
+                <span class="navbar-toggler-icon" style="filter: brightness(0) invert(1);"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-center">
                     <li class="nav-item">
-                        <a class="nav-link" href="#features">Fitur</a>
+                        <a class="nav-link" href="#features">Layanan</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#stats">Statistik</a>
@@ -462,13 +579,13 @@
                     @if (Route::has('login'))
                         @auth
                             <li class="nav-item ms-3">
-                                <a href="{{ url('/dashboard') }}" class="btn btn-primary-custom">
+                                <a href="{{ url('/dashboard') }}" class="btn btn-village-primary">
                                     <i class="fas fa-tachometer-alt me-2"></i>Dashboard
                                 </a>
                             </li>
                         @else
                             <li class="nav-item ms-3">
-                                <a href="{{ route('login') }}" class="btn btn-outline-custom">
+                                <a href="{{ route('login') }}" class="btn btn-village-outline">
                                     <i class="fas fa-sign-in-alt me-2"></i>Login
                                 </a>
                             </li>
@@ -481,64 +598,73 @@
 
     <!-- Hero Section -->
     <section class="hero-section">
-        <!-- Floating Shapes -->
-        <div class="shape shape-1"></div>
-        <div class="shape shape-2"></div>
-        <div class="shape shape-3"></div>
+        <!-- Clouds -->
+        <div class="village-clouds village-clouds-1"></div>
+        <div class="village-clouds village-clouds-2"></div>
+        
+        <!-- Rice field pattern -->
+        <div class="rice-field-pattern"></div>
         
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-6 hero-content">
-                    <h1 class="hero-title">Sistem Informasi Manajemen Desa</h1>
+                    <h1 class="hero-title">Selamat Datang di Desa SIDOKARE</h1>
                     <p class="hero-subtitle">
-                        Platform digital terpadu untuk mengelola administrasi desa dengan mudah, cepat, dan efisien. Tingkatkan pelayanan kepada warga dengan teknologi modern.
+                        <i class="fas fa-map-marker-alt me-2"></i>
+                        Sistem Informasi Desa Sidokare, Kabupaten Sidoarjo. Melayani dengan hati untuk administrasi desa yang lebih mudah, cepat, dan transparan.
                     </p>
                     <div class="hero-buttons">
                         @guest
-                            <a href="{{ route('login') }}" class="btn btn-white-custom">
-                                <i class="fas fa-rocket me-2"></i>Mulai Sekarang
+                            <a href="{{ route('login') }}" class="btn btn-village-primary btn-lg">
+                                <i class="fas fa-rocket me-2"></i>Mulai Layanan
                             </a>
                         @else
-                            <a href="{{ url('/dashboard') }}" class="btn btn-white-custom">
+                            <a href="{{ url('/dashboard') }}" class="btn btn-village-primary btn-lg">
                                 <i class="fas fa-tachometer-alt me-2"></i>Ke Dashboard
                             </a>
                         @endguest
-                        <a href="#features" class="btn btn-outline-white">
+                        <a href="#features" class="btn btn-village-outline btn-lg">
                             <i class="fas fa-info-circle me-2"></i>Pelajari Lebih Lanjut
                         </a>
                     </div>
                 </div>
-                <div class="col-lg-6 hero-image">
-                    <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:rgba(255,255,255,0.9)" />
-                                <stop offset="100%" style="stop-color:rgba(255,255,255,0.5)" />
-                            </linearGradient>
-                        </defs>
-                        <!-- Buildings -->
-                        <rect x="100" y="200" width="80" height="200" fill="url(#gradient)" rx="5"/>
-                        <rect x="200" y="150" width="100" height="250" fill="url(#gradient)" rx="5"/>
-                        <rect x="320" y="180" width="80" height="220" fill="url(#gradient)" rx="5"/>
-                        <!-- Windows -->
-                        <rect x="115" y="220" width="15" height="20" fill="rgba(102, 126, 234, 0.3)" rx="2"/>
-                        <rect x="145" y="220" width="15" height="20" fill="rgba(102, 126, 234, 0.3)" rx="2"/>
-                        <rect x="115" y="260" width="15" height="20" fill="rgba(102, 126, 234, 0.3)" rx="2"/>
-                        <rect x="145" y="260" width="15" height="20" fill="rgba(102, 126, 234, 0.3)" rx="2"/>
-                        <rect x="220" y="180" width="20" height="25" fill="rgba(102, 126, 234, 0.3)" rx="2"/>
-                        <rect x="260" y="180" width="20" height="25" fill="rgba(102, 126, 234, 0.3)" rx="2"/>
-                        <rect x="220" y="230" width="20" height="25" fill="rgba(102, 126, 234, 0.3)" rx="2"/>
-                        <rect x="260" y="230" width="20" height="25" fill="rgba(102, 126, 234, 0.3)" rx="2"/>
-                        <!-- Data flow animation -->
-                        <circle cx="250" cy="100" r="40" fill="rgba(255,255,255,0.9)" opacity="0.8">
-                            <animate attributeName="r" values="40;50;40" dur="2s" repeatCount="indefinite"/>
-                            <animate attributeName="opacity" values="0.8;0.4;0.8" dur="2s" repeatCount="indefinite"/>
-                        </circle>
-                        <path d="M 250 140 L 250 180" stroke="white" stroke-width="3" stroke-dasharray="5,5">
-                            <animate attributeName="stroke-dashoffset" from="0" to="10" dur="0.5s" repeatCount="indefinite"/>
-                        </path>
-                        <text x="250" y="110" text-anchor="middle" fill="#667eea" font-size="20" font-weight="bold">DATA</text>
-                    </svg>
+                <div class="col-lg-6">
+                    <div class="hero-illustration">
+                        <!-- Village Houses -->
+                        <div class="village-house" style="left: 50px; bottom: 80px;">
+                            <div class="house-roof"></div>
+                            <div class="house-base">
+                                <div class="house-window window-left"></div>
+                                <div class="house-window window-right"></div>
+                                <div class="house-door"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="village-house" style="right: 100px; bottom: 60px; transform: scale(0.9);">
+                            <div class="house-roof"></div>
+                            <div class="house-base">
+                                <div class="house-window window-left"></div>
+                                <div class="house-window window-right"></div>
+                                <div class="house-door"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Trees -->
+                        <div class="tree" style="left: 20px; bottom: 20px;">
+                            <div class="tree-leaves"></div>
+                            <div class="tree-trunk"></div>
+                        </div>
+                        
+                        <div class="tree" style="right: 50px; bottom: 10px; transform: scale(0.8);">
+                            <div class="tree-leaves"></div>
+                            <div class="tree-trunk"></div>
+                        </div>
+                        
+                        <div class="tree" style="right: 200px; bottom: 30px; transform: scale(1.1);">
+                            <div class="tree-leaves"></div>
+                            <div class="tree-trunk"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -547,8 +673,8 @@
     <!-- Features Section -->
     <section class="features-section" id="features">
         <div class="container">
-            <h2 class="section-title">Fitur Unggulan</h2>
-            <p class="section-subtitle">Solusi lengkap untuk manajemen administrasi desa modern</p>
+            <h2 class="section-title">Layanan Kami</h2>
+            <p class="section-subtitle">Berbagai layanan administrasi desa yang dapat diakses secara digital</p>
             
             <div class="row g-4">
                 <div class="col-lg-4 col-md-6">
@@ -556,8 +682,8 @@
                         <div class="feature-icon">
                             <i class="fas fa-users"></i>
                         </div>
-                        <h3 class="feature-title">Manajemen Warga</h3>
-                        <p class="feature-desc">Kelola data kependudukan dan kartu keluarga dengan sistem database yang terorganisir dan mudah diakses.</p>
+                        <h3 class="feature-title">Data Kependudukan</h3>
+                        <p class="feature-desc">Kelola data penduduk dan kartu keluarga dengan sistem database yang terorganisir dan mudah diakses.</p>
                     </div>
                 </div>
                 
@@ -566,18 +692,18 @@
                         <div class="feature-icon">
                             <i class="fas fa-file-alt"></i>
                         </div>
-                        <h3 class="feature-title">Layanan Permohonan</h3>
-                        <p class="feature-desc">Proses permohonan surat dan dokumen secara digital dengan tracking status real-time.</p>
+                        <h3 class="feature-title">Surat Menyurat</h3>
+                        <p class="feature-desc">Ajukan permohonan surat secara online dengan tracking status real-time dan download hasil surat dalam format PDF.</p>
                     </div>
                 </div>
                 
                 <div class="col-lg-4 col-md-6">
                     <div class="feature-card">
                         <div class="feature-icon">
-                            <i class="fas fa-chart-bar"></i>
+                            <i class="fas fa-chart-line"></i>
                         </div>
-                        <h3 class="feature-title">Laporan & Analitik</h3>
-                        <p class="feature-desc">Dashboard analitik komprehensif dengan visualisasi data untuk pengambilan keputusan.</p>
+                        <h3 class="feature-title">Laporan & Statistik</h3>
+                        <p class="feature-desc">Dashboard analitik dengan visualisasi data untuk pengambilan keputusan yang lebih baik.</p>
                     </div>
                 </div>
                 
@@ -586,8 +712,8 @@
                         <div class="feature-icon">
                             <i class="fas fa-shield-alt"></i>
                         </div>
-                        <h3 class="feature-title">Keamanan Data</h3>
-                        <p class="feature-desc">Sistem keamanan berlapis dengan enkripsi data dan kontrol akses berbasis role.</p>
+                        <h3 class="feature-title">Keamanan Terjamin</h3>
+                        <p class="feature-desc">Sistem keamanan berlapis dengan enkripsi data dan kontrol akses berbasis role untuk melindungi privasi warga.</p>
                     </div>
                 </div>
                 
@@ -596,8 +722,8 @@
                         <div class="feature-icon">
                             <i class="fas fa-mobile-alt"></i>
                         </div>
-                        <h3 class="feature-title">Mobile Friendly</h3>
-                        <p class="feature-desc">Akses sistem dari berbagai perangkat dengan tampilan responsive dan user-friendly.</p>
+                        <h3 class="feature-title">Akses Kapan Saja</h3>
+                        <p class="feature-desc">Akses layanan dari berbagai perangkat (HP, tablet, komputer) dengan tampilan responsive.</p>
                     </div>
                 </div>
                 
@@ -606,8 +732,8 @@
                         <div class="feature-icon">
                             <i class="fas fa-history"></i>
                         </div>
-                        <h3 class="feature-title">Activity Log</h3>
-                        <p class="feature-desc">Tracking semua aktivitas pengguna untuk audit trail dan transparency penuh.</p>
+                        <h3 class="feature-title">Tracking Permohonan</h3>
+                        <p class="feature-desc">Pantau status permohonan surat Anda secara real-time dengan notifikasi otomatis.</p>
                     </div>
                 </div>
             </div>
@@ -618,28 +744,28 @@
     <section class="stats-section" id="stats">
         <div class="container">
             <div class="row">
-                <div class="col-lg-3 col-md-6">
-                    <div class="stat-card">
-                        <div class="stat-number">99%</div>
-                        <div class="stat-label">Tingkat Kepuasan</div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
+                <div class="col-lg-3 col-md-6 mb-4">
                     <div class="stat-card">
                         <div class="stat-number">24/7</div>
-                        <div class="stat-label">Akses Online</div>
+                        <div class="stat-label">Layanan Online</div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6">
+                <div class="col-lg-3 col-md-6 mb-4">
                     <div class="stat-card">
-                        <div class="stat-number">100+</div>
-                        <div class="stat-label">Jenis Layanan</div>
+                        <div class="stat-number">20+</div>
+                        <div class="stat-label">Jenis Layanan Surat</div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6">
+                <div class="col-lg-3 col-md-6 mb-4">
                     <div class="stat-card">
-                        <div class="stat-number">Fast</div>
-                        <div class="stat-label">Pemrosesan</div>
+                        <div class="stat-number">100%</div>
+                        <div class="stat-label">Digital & Paperless</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="stat-card">
+                        <div class="stat-number"><i class="fas fa-bolt"></i></div>
+                        <div class="stat-label">Proses Cepat</div>
                     </div>
                 </div>
             </div>
@@ -649,14 +775,14 @@
     <!-- CTA Section -->
     <section class="cta-section" id="contact">
         <div class="container">
-            <h2 class="cta-title">Siap Memulai Transformasi Digital?</h2>
-            <p class="cta-text">Bergabunglah dengan sistem manajemen desa modern untuk pelayanan yang lebih baik</p>
+            <h2 class="cta-title">Siap Menggunakan Layanan Digital Kami?</h2>
+            <p class="cta-text">Bergabunglah dengan sistem pelayanan desa modern untuk kemudahan akses administrasi Anda</p>
             @guest
-                <a href="{{ route('login') }}" class="btn btn-white-custom btn-lg">
+                <a href="{{ route('login') }}" class="btn btn-village-primary btn-lg" style="background: white; color: var(--primary-green); box-shadow: 0 6px 30px rgba(0,0,0,0.2);">
                     <i class="fas fa-sign-in-alt me-2"></i>Login Sekarang
                 </a>
             @else
-                <a href="{{ url('/dashboard') }}" class="btn btn-white-custom btn-lg">
+                <a href="{{ url('/dashboard') }}" class="btn btn-village-primary btn-lg" style="background: white; color: var(--primary-green); box-shadow: 0 6px 30px rgba(0,0,0,0.2);">
                     <i class="fas fa-tachometer-alt me-2"></i>Ke Dashboard
                 </a>
             @endguest
@@ -669,45 +795,49 @@
             <div class="row">
                 <div class="col-lg-4 mb-4">
                     <h3 class="footer-title">
-                        <i class="fas fa-building me-2"></i>SIMDESA
+                        <img src="{{ asset('images/logo-sidoarjo.png') }}" alt="Logo Sidoarjo" style="height: 40px; margin-right: 10px; vertical-align: middle;">
+                        DESA SIDOKARE
                     </h3>
                     <p class="text-white-50">
-                        Sistem Informasi Manajemen Desa yang memudahkan administrasi dan pelayanan kepada masyarakat.
+                        Sistem Informasi Desa SIDOKARE, Kabupaten Sidoarjo. Melayani masyarakat dengan teknologi digital untuk administrasi yang lebih baik.
                     </p>
                     <div class="social-icons mt-3">
                         <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
                         <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fas fa-envelope"></i></a>
                     </div>
                 </div>
                 <div class="col-lg-2 col-md-6 mb-4">
                     <h5 class="footer-title">Menu</h5>
-                    <a href="#features" class="footer-link">Fitur</a>
+                    <a href="#features" class="footer-link">Layanan</a>
                     <a href="#stats" class="footer-link">Statistik</a>
                     <a href="{{ route('login') }}" class="footer-link">Login</a>
                 </div>
                 <div class="col-lg-3 col-md-6 mb-4">
-                    <h5 class="footer-title">Layanan</h5>
-                    <a href="#" class="footer-link">Surat Menyurat</a>
-                    <a href="#" class="footer-link">Data Kependudukan</a>
-                    <a href="#" class="footer-link">Laporan Desa</a>
+                    <h5 class="footer-title">Layanan Surat</h5>
+                    <a href="#" class="footer-link">Surat Keterangan Domisili</a>
+                    <a href="#" class="footer-link">Surat Keterangan Usaha</a>
+                    <a href="#" class="footer-link">Surat Keterangan Tidak Mampu</a>
+                    <a href="#" class="footer-link">Dan 20+ lainnya</a>
                 </div>
                 <div class="col-lg-3 mb-4">
-                    <h5 class="footer-title">Kontak</h5>
+                    <h5 class="footer-title">Kontak Kami</h5>
                     <p class="text-white-50">
-                        <i class="fas fa-map-marker-alt me-2"></i>Kantor Desa
+                        <i class="fas fa-map-marker-alt me-2"></i>Kantor Desa SIDOKARE<br>
+                        <span style="padding-left: 24px;">Kecamatan Sidoarjo</span><br>
+                        <span style="padding-left: 24px;">Kabupaten Sidoarjo</span>
                     </p>
                     <p class="text-white-50">
-                        <i class="fas fa-phone me-2"></i>(021) 1234-5678
+                        <i class="fas fa-phone me-2"></i>(031) 123-4567
                     </p>
                     <p class="text-white-50">
-                        <i class="fas fa-envelope me-2"></i>info@simdesa.id
+                        <i class="fas fa-envelope me-2"></i>info@sidokare.desa.id
                     </p>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p class="mb-0">&copy; {{ date('Y') }} SIMDESA. All rights reserved. Built with <i class="fas fa-heart text-danger"></i> for better village administration.</p>
+                <p class="mb-0">&copy; {{ date('Y') }} Desa SIDOKARE - Kabupaten Sidoarjo. Sistem Informasi Desa Modern.</p>
             </div>
         </div>
     </footer>
@@ -734,27 +864,10 @@
         window.addEventListener('scroll', function() {
             const navbar = document.querySelector('.navbar');
             if (window.scrollY > 50) {
-                navbar.style.boxShadow = '0 4px 30px rgba(0, 0, 0, 0.2)';
+                navbar.style.boxShadow = '0 4px 30px rgba(45, 125, 62, 0.5)';
             } else {
-                navbar.style.boxShadow = '0 4px 30px rgba(0, 0, 0, 0.1)';
+                navbar.style.boxShadow = '0 4px 20px rgba(45, 125, 62, 0.3)';
             }
-        });
-        
-        // Counter animation for stats
-        const observerOptions = {
-            threshold: 0.5
-        };
-        
-        const observer = new IntersectionObserver(function(entries) {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('animate');
-                }
-            });
-        }, observerOptions);
-        
-        document.querySelectorAll('.stat-card').forEach(card => {
-            observer.observe(card);
         });
     </script>
 </body>

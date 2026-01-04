@@ -17,7 +17,7 @@
                 <h6 class="m-0 fw-bold text-primary">Form Pengajuan Permohonan</h6>
             </div>
             <div class="card-body">
-                <form action="{{ route('permohonan.store') }}" method="POST">
+                <form action="{{ route('permohonan.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     
                     <!-- Pilih Layanan -->
@@ -37,6 +37,29 @@
                         @error('layanan_id')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
+                    </div>
+
+                    <!-- Upload Persyaratan Section (Dynamic) -->
+                    <div id="upload-section" style="display: none;" class="mb-3">
+                        <h6 class="fw-bold text-primary mb-3">
+                            <i class="fas fa-upload me-1"></i>Upload Dokumen Persyaratan
+                        </h6>
+                        <div id="upload-fields"></div>
+                    </div>
+
+                    <!-- Dynamic Form Data (Rendered by JavaScript based on Layanan) -->
+                    <div class="mb-4" id="dynamic-form-section" style="display: none;">
+                        <h6 class="fw-bold text-success mb-3 border-bottom pb-2">
+                            <i class="fas fa-file-alt me-1"></i>Data yang Dibutuhkan untuk Surat
+                        </h6>
+                        <div class="alert alert-info py-2 mb-3">
+                            <small>
+                                <i class="fas fa-info-circle me-1"></i>
+                                Isi data berikut dengan lengkap. Data ini akan digunakan untuk mencetak surat.
+                            </small>
+                        </div>
+                        <!-- Forms will be rendered here by JavaScript -->
+                        <div id="dynamic-form-fields"></div>
                     </div>
 
                     <!-- Keterangan -->
@@ -123,8 +146,67 @@ document.getElementById('layanan_id').addEventListener('change', function() {
     const layananId = this.value;
     const layananInfo = document.getElementById('layanan-info');
     const persyaratanInfo = document.getElementById('persyaratan-info');
+    const uploadSection = document.getElementById('upload-section');
+    const uploadFields = document.getElementById('upload-fields');
+    const dynamicFormSection = document.getElementById('dynamic-form-section');
+    const dynamicFormFields = document.getElementById('dynamic-form-fields');
 
     if (layananId) {
+        // Fetch form schema from API
+        fetch(`/api/layanan/${layananId}/form-schema`)
+            .then(response => response.json())
+            .then(schemaData => {
+                if (schemaData.success && schemaData.form_schema) {
+                    // Show dynamic form section
+                    dynamicFormSection.style.display = 'block';
+                    
+                    // Render dynamic form fields
+                    let formHtml = '<div class="row">';
+                    Object.keys(schemaData.form_schema).forEach(fieldName => {
+                        const field = schemaData.form_schema[fieldName];
+                        const colClass = (field.type === 'textarea') ? 'col-md-12' : 'col-md-6';
+                        
+                        formHtml += `<div class="${colClass} mb-3">`;
+                        formHtml += `<label for="form_data_${fieldName}" class="form-label">`;
+                        formHtml += field.label;
+                        if (field.required) {
+                            formHtml += ' <span class="text-danger">*</span>';
+                        }
+                        formHtml += `</label>`;
+                        
+                        // Render input based on type
+                        if (field.type === 'select') {
+                            formHtml += `<select class="form-control" id="form_data_${fieldName}" name="form_data[${fieldName}]" ${field.required ? 'required' : ''}>`;
+                            formHtml += `<option value="">-- Pilih --</option>`;
+                            field.options.forEach(option => {
+                                formHtml += `<option value="${option}">${option}</option>`;
+                            });
+                            formHtml += `</select>`;
+                        } else if (field.type === 'textarea') {
+                            formHtml += `<textarea class="form-control" id="form_data_${fieldName}" name="form_data[${fieldName}]" rows="3" ${field.required ? 'required' : ''} placeholder="${field.placeholder || ''}"></textarea>`;
+                        } else if (field.type === 'number') {
+                            formHtml += `<input type="number" class="form-control" id="form_data_${fieldName}" name="form_data[${fieldName}]" ${field.required ? 'required' : ''} ${field.min ? `min="${field.min}"` : ''} placeholder="${field.placeholder || ''}">`;
+                        } else {
+                            // text, date, time
+                            formHtml += `<input type="${field.type}" class="form-control" id="form_data_${fieldName}" name="form_data[${fieldName}]" ${field.required ? 'required' : ''} placeholder="${field.placeholder || ''}">`;
+                        }
+                        
+                        formHtml += `</div>`;
+                    });
+                    formHtml += '</div>';
+                    
+                    dynamicFormFields.innerHTML = formHtml;
+                } else {
+                    // No form schema, hide section
+                    dynamicFormSection.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching form schema:', error);
+                dynamicFormSection.style.display = 'none';
+            });
+        
+        // Original code for layanan info and persyaratan
         // Data dari database
         const layananData = {
             @foreach($layanans as $layanan)
@@ -137,6 +219,7 @@ document.getElementById('layanan_id').addEventListener('change', function() {
                 persyaratan: [
                     @foreach($layanan->persyaratan as $syarat)
                     {
+                        dokumen_id: {{ $syarat->dokumen_id }},
                         nama: '{{ $syarat->dokumen->nama_dokumen }}',
                         wajib: {{ $syarat->wajib ? 'true' : 'false' }},
                         catatan: '{{ $syarat->catatan ?? "" }}'
@@ -168,6 +251,7 @@ document.getElementById('layanan_id').addEventListener('change', function() {
 
         // Update persyaratan (Real Data)
         if (data.persyaratan.length > 0) {
+            // 1. Update Sidebar Info
             let persyaratanHtml = '<div class="small">';
             
             data.persyaratan.forEach(syarat => {
@@ -188,13 +272,42 @@ document.getElementById('layanan_id').addEventListener('change', function() {
             </div>`;
             
             persyaratanInfo.innerHTML = persyaratanHtml;
+
+            // 2. Render Upload Fields (Main Form)
+            uploadSection.style.display = 'block';
+            let uploadHtml = '';
+            
+            data.persyaratan.forEach(syarat => {
+                uploadHtml += `
+                    <div class="mb-3">
+                        <label for="attachment_${syarat.id}" class="form-label">
+                            ${syarat.nama}
+                            ${syarat.wajib ? '<span class="text-danger">*</span>' : '<span class="text-muted small">(Opsional)</span>'}
+                        </label>
+                        <input type="file" class="form-control" id="attachment_${syarat.id}" 
+                               name="attachments[${syarat.dokumen_id}]" 
+                               accept=".pdf,.jpg,.jpeg,.png"
+                               ${syarat.wajib ? 'required' : ''}>
+                        <div class="form-text small">
+                            Format: PDF, JPG, PNG. Max: 5MB.
+                            ${syarat.catatan ? `<br><span class="text-info"><i class="fas fa-info-circle me-1"></i>${syarat.catatan}</span>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            uploadFields.innerHTML = uploadHtml;
+
         } else {
+            // No requirements
             persyaratanInfo.innerHTML = `
                 <div class="text-center text-muted py-2">
                     <i class="fas fa-check-double fa-2x mb-2 text-success"></i>
                     <p class="small">Tidak ada persyaratan khusus untuk layanan ini</p>
                 </div>
             `;
+            uploadSection.style.display = 'none';
+            uploadFields.innerHTML = '';
         }
     } else {
         layananInfo.innerHTML = `

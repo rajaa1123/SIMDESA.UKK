@@ -77,12 +77,17 @@ class AuthController extends Controller
                 'password' => bcrypt($validated['password']),
                 'phone' => $validated['phone'],
                 'role_id' => 1, // role: warga
+                'status' => 'active', // Set status active
             ]);
 
             DB::commit();
 
-            return redirect()->route('login')
-                ->with('success', 'Registrasi berhasil! Silakan login.');
+            // **AUTO-LOGIN setelah registrasi berhasil**
+            Auth::login($user);
+            $request->session()->regenerate();
+
+            return redirect()->route('dashboard')
+                ->with('success', 'Akun Anda berhasil dibuat! Selamat datang di SIMDESA.');
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -93,4 +98,5 @@ class AuthController extends Controller
                 ->withErrors(['email' => 'Registrasi gagal. Silakan coba lagi atau hubungi admin.']);
         }
     }
+
 }

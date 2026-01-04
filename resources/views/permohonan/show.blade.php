@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
-@section('title', 'Detail Permohonan - ' . $permohonan->nomor_resi)
+@section('title', 'Detail Pengajuan - ' . $permohonan->nomor_resi)
 
 @section('content')
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Detail Permohonan</h1>
+    <h1 class="h2">Detail Pengajuan Layanan</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
         <a href="{{ route('permohonan.index') }}" class="btn btn-secondary btn-sm">
             <i class="fas fa-arrow-left me-1"></i>Kembali
@@ -19,7 +19,7 @@
         <div class="card shadow-sm mb-3">
             <div class="card-header py-2">
                 <h6 class="m-0 fw-bold text-primary">
-                    <i class="fas fa-file-alt me-1"></i>Informasi Permohonan
+                    <i class="fas fa-file-alt me-1"></i>Informasi Pengajuan
                 </h6>
             </div>
             <div class="card-body">
@@ -51,7 +51,9 @@
                                     @php
                                         $statusClass = [
                                             'baru' => 'bg-warning',
+                                            'pending' => 'bg-warning',
                                             'diproses' => 'bg-primary',
+                                            'menunggu_persetujuan_kades' => 'bg-info',
                                             'ditolak' => 'bg-danger', 
                                             'selesai' => 'bg-success'
                                         ][$permohonan->status->code] ?? 'bg-secondary';
@@ -127,6 +129,109 @@
             </div>
         </div>
 
+        <!-- Hasil Surat Layanan -->
+        <div class="card shadow-sm mb-3">
+            <div class="card-header py-2">
+                <h6 class="m-0 fw-bold text-success">
+                    <i class="fas fa-file-pdf me-1"></i>Surat Hasil Layanan
+                </h6>
+            </div>
+            <div class="card-body">
+                @if($permohonan->hasHasilSurat())
+                    <!-- Jika surat sudah diupload -->
+                    <div class="alert alert-success mb-3">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <strong>Surat hasil layanan telah tersedia!</strong>
+                    </div>
+                    
+                    <table class="table table-borderless table-sm">
+                        <tr>
+                            <th width="30%">File</th>
+                            <td>{{ $permohonan->hasil_surat_filename }}</td>
+                        </tr>
+                        <tr>
+                            <th>Diupload Oleh</th>
+                            <td>{{ $permohonan->hasilSuratUploadedBy->name ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Tanggal Upload</th>
+                            <td>{{ $permohonan->hasil_surat_uploaded_at?->format('d/m/Y H:i') ?? '-' }}</td>
+                        </tr>
+                    </table>
+
+                    <div class="d-flex gap-2">
+                        <a href="{{ route('permohonan.download-hasil-surat', $permohonan) }}" 
+                           class="btn btn-success btn-sm">
+                            <i class="fas fa-download me-1"></i>Download Surat Hasil
+                        </a>
+                        
+                        @if(auth()->user()->isAdmin() || auth()->user()->isKepalaDesa())
+                            <button type="button" class="btn btn-warning btn-sm" 
+                                    data-bs-toggle="collapse" data-bs-target="#re-upload-form">
+                                <i class="fas fa-redo me-1"></i>Upload Ulang
+                            </button>
+                        @endif
+                    </div>
+
+                    @if(auth()->user()->isAdmin() || auth()->user()->isKepalaDesa())
+                        <div class="collapse mt-3" id="re-upload-form">
+                            <div class="border rounded p-3 bg-light">
+                                <h6 class="mb-3">Upload Surat Baru (Replace)</h6>
+                                <form action="{{ route('permohonan.upload-hasil-surat', $permohonan) }}" 
+                                      method="POST" enctype="multipart/form-data">
+                                    @csrf
+                                    <div class="mb-2">
+                                        <input type="file" name="hasil_surat" class="form-control form-control-sm" 
+                                               accept=".pdf" required>
+                                        <small class="text-muted">Format: PDF, Max: 10MB</small>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-upload me-1"></i>Upload
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    @endif
+                @else
+                    <!-- Jika surat belum diupload -->
+                    @if(auth()->user()->isAdmin() || auth()->user()->isKepalaDesa())
+                        <div class="alert alert-info mb-3">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Surat hasil belum diupload. Anda dapat mengupload manual atau generate otomatis.
+                        </div>
+                        
+                        <!-- Auto Generate Buttons -->
+                        <div class="d-grid gap-2 mb-3">
+                            <!-- Direct Generate (No Preview) -->
+                            <form action="{{ route('surat.generate', $permohonan) }}" method="POST" 
+                                  onsubmit="return confirm('Generate PDF surat otomatis? Nomor surat akan dibuat otomatis.');">
+                                @csrf
+                                <input type="hidden" name="nomor_surat" value="AUTO">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-magic me-2"></i>Generate Surat Otomatis
+                                </button>
+                            </form>
+                            
+                            <!-- Preview First -->
+                            <a href="{{ route('surat.preview', $permohonan) }}" class="btn btn-outline-primary">
+                                <i class="fas fa-eye me-2"></i>Preview Dulu Sebelum Generate
+                            </a>
+                        </div>
+                        
+                        <div class="alert alert-warning text-center small">
+                            <i class="fas fa-exclamation-triangle me-1"></i>
+                            Upload manual dinonaktifkan. Gunakan tombol generate di atas.
+                        </div>
+                    @else
+                        <div class="alert alert-warning text-center">
+                            <i class="fas fa-clock fa-2x mb-2"></i>
+                            <p class="mb-0">Surat hasil layanan belum tersedia. Silakan tunggu admin/kepala desa untuk mengupload surat hasil.</p>
+                        </div>
+                    @endif
+                @endif
+            </div>
+        </div>
+
         <!-- History Status -->
         <div class="card shadow-sm">
             <div class="card-header py-2">
@@ -177,58 +282,9 @@
         </div>
     </div>
 
-    <!-- Sidebar Actions -->
+    <!-- Sidebar -->
     <div class="col-md-4">
-        <!-- Quick Actions -->
-        <div class="card shadow-sm mb-3">
-            <div class="card-header py-2">
-                <h6 class="m-0 fw-bold text-success">Aksi Cepat</h6>
-            </div>
-            <div class="card-body">
-                <div class="d-grid gap-2">
-                    @if(auth()->user()->isAdmin() || auth()->user()->isKepalaDesa())
-                    <a href="{{ route('permohonan.edit', $permohonan->id) }}" class="btn btn-warning btn-sm">
-                        <i class="fas fa-edit me-1"></i>Edit Permohonan
-                    </a>
-                    
-                    <!-- Update Status Form -->
-                    <form action="{{ route('permohonan.update-status', $permohonan->id) }}" method="POST" class="mt-2">
-                        @csrf
-                        <div class="mb-2">
-                            <label class="form-label small fw-bold">Update Status</label>
-                            <select name="status_id" class="form-control form-control-sm" required>
-                                @foreach($statuses as $status)
-                                    <option value="{{ $status->id }}" {{ $permohonan->status_id == $status->id ? 'selected' : '' }}>
-                                        {{ $status->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="mb-2">
-                            <textarea name="note" class="form-control form-control-sm" rows="2" 
-                                      placeholder="Catatan (opsional)"></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-sm w-100">
-                            <i class="fas fa-sync me-1"></i>Update Status
-                        </button>
-                    </form>
-                    @endif
-
-                    @if(auth()->user()->isWarga())
-                    <div class="text-center">
-                        <div class="mb-2">
-                            <i class="fas fa-info-circle text-info fa-2x"></i>
-                        </div>
-                        <p class="small text-muted mb-2">
-                            Pantau terus status permohonan Anda. Admin akan memproses secepatnya.
-                        </p>
-                    </div>
-                    @endif
-                </div>
-            </div>
-        </div>
-
-        <!-- Informasi Layanan -->
+        <!-- Info Layanan -->
         <div class="card shadow-sm mb-3">
             <div class="card-header py-2">
                 <h6 class="m-0 fw-bold text-info">Informasi Layanan</h6>
@@ -236,18 +292,7 @@
             <div class="card-body">
                 <h6 class="fw-bold">{{ $permohonan->layanan->nama_layanan }}</h6>
                 <p class="small mb-2">{{ $permohonan->layanan->deskripsi }}</p>
-                <div class="row text-center small">
-                    <div class="col-6 border-end">
-                        <div class="text-muted">Durasi</div>
-                        <div class="fw-bold text-info">{{ $permohonan->layanan->durasi_proses }}</div>
-                    </div>
-                    <div class="col-6">
-                        <div class="text-muted">Biaya</div>
-                        <div class="fw-bold {{ $permohonan->layanan->biaya == 'Gratis' ? 'text-success' : 'text-warning' }}">
-                            {{ $permohonan->layanan->biaya }}
-                        </div>
-                    </div>
-                </div>
+
             </div>
         </div>
 
@@ -268,9 +313,21 @@
                                     <i class="fas fa-file text-muted me-2"></i>
                                     {{ $attachment->nama_file }}
                                 </div>
-                                <a href="#" class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-download"></i>
-                                </a>
+                                <div class="btn-group btn-group-sm">
+                                    @if($attachment->isPdf() || $attachment->isImage())
+                                        <a href="{{ route('file.stream', $attachment) }}" 
+                                           class="btn btn-outline-info" 
+                                           target="_blank"
+                                           title="Lihat File">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    @endif
+                                    <a href="{{ route('file.download', $attachment) }}" 
+                                       class="btn btn-outline-primary"
+                                       title="Download File">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                         @endforeach
@@ -280,14 +337,6 @@
                         <i class="fas fa-file-upload fa-2x mb-2"></i>
                         <p class="small mb-0">Belum ada dokumen diunggah</p>
                     </div>
-                @endif
-                
-                @if(auth()->user()->isWarga())
-                <div class="mt-3">
-                    <button class="btn btn-outline-success btn-sm w-100">
-                        <i class="fas fa-upload me-1"></i>Unggah Dokumen
-                    </button>
-                </div>
                 @endif
             </div>
         </div>

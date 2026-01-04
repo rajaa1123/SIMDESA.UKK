@@ -11,7 +11,13 @@ class StatusSeeder extends Seeder
     public function run(): void
     {
         $statuses = [
-            // Status untuk permohonan
+            // Status untuk pengajuan layanan (sistem baru dengan approval berjenjang)
+            ['group_key' => 'pengajuan', 'code' => 'pending', 'name' => 'Menunggu Verifikasi Admin'],
+            ['group_key' => 'pengajuan', 'code' => 'menunggu_persetujuan_kades', 'name' => 'Menunggu Persetujuan Kepala Desa'],
+            ['group_key' => 'pengajuan', 'code' => 'selesai', 'name' => 'Selesai'],
+            ['group_key' => 'pengajuan', 'code' => 'ditolak', 'name' => 'Ditolak'],
+            
+            // Status lama untuk backward compatibility (permohonan)
             ['group_key' => 'permohonan', 'code' => 'baru', 'name' => 'Menunggu Diproses'],
             ['group_key' => 'permohonan', 'code' => 'diproses', 'name' => 'Sedang Diproses'],
             ['group_key' => 'permohonan', 'code' => 'ditolak', 'name' => 'Ditolak'],
@@ -24,7 +30,6 @@ class StatusSeeder extends Seeder
         ];
 
         foreach ($statuses as $status) {
-            // ✅ GUNAKAN updateOrCreate
             Status::updateOrCreate(
                 [
                     'group_key' => $status['group_key'],

@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Permohonan - ' . $permohonan->nomor_resi)
+@section('title', 'Edit Pengajuan - ' . $permohonan->nomor_resi)
 
 @section('content')
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Edit Permohonan</h1>
+    <h1 class="h2">Edit Pengajuan Layanan</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
         <a href="{{ route('permohonan.show', $permohonan->id) }}" class="btn btn-info btn-sm me-2">
             <i class="fas fa-eye me-1"></i>Detail
@@ -19,7 +19,7 @@
     <div class="col-lg-8">
         <div class="card shadow-sm">
             <div class="card-header py-2">
-                <h6 class="m-0 fw-bold text-primary">Form Edit Permohonan</h6>
+                <h6 class="m-0 fw-bold text-primary">Form Edit Pengajuan Layanan</h6>
             </div>
             <div class="card-body">
                 <form action="{{ route('permohonan.update', $permohonan->id) }}" method="POST">
@@ -129,7 +129,7 @@
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                         <a href="{{ route('permohonan.show', $permohonan->id) }}" class="btn btn-secondary btn-sm me-2">Batal</a>
                         <button type="submit" class="btn btn-primary btn-sm">
-                            <i class="fas fa-save me-1"></i>Update Permohonan
+                            <i class="fas fa-save me-1"></i>Update Pengajuan
                         </button>
                     </div>
                 </form>

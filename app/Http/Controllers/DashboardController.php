@@ -14,22 +14,21 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
         
-        // ✅ TAMBAH: Logic berbeda untuk setiap role
         if ($user->isWarga()) {
-            // Untuk warga: hanya tampilkan permohonan sendiri
+            // Untuk warga: hanya tampilkan pengajuan sendiri dengan status baru
             $stats = [
                 'total_permohonan' => Permohonan::where('user_id', $user->id)->count(),
                 'permohonan_pending' => Permohonan::where('user_id', $user->id)
                     ->whereHas('status', function($q) {
-                        $q->where('code', 'baru');
+                        $q->where('code', 'pending')->where('group_key', 'pengajuan');
                     })->count(),
                 'permohonan_diproses' => Permohonan::where('user_id', $user->id)
                     ->whereHas('status', function($q) {
-                        $q->where('code', 'diproses');
+                        $q->where('code', 'menunggu_persetujuan_kades')->where('group_key', 'pengajuan');
                     })->count(),
                 'permohonan_selesai' => Permohonan::where('user_id', $user->id)
                     ->whereHas('status', function($q) {
-                        $q->where('code', 'selesai');
+                        $q->where('code', 'selesai')->where('group_key', 'pengajuan');
                 })->count(),
                 'total_layanan' => Layanan::count(),
             ];
@@ -62,14 +61,50 @@ class DashboardController extends Controller
                 ->take(3)
                 ->get();
             
-            return view('dashboard.index', compact('stats', 'recent_permohonan', 'statusBreakdown', 'popularLayanan', 'recentUpdates'));
+            // Permohonan dengan hasil surat tersedia
+            $permohonanWithSurat = Permohonan::with(['layanan'])
+                ->where('user_id', $user->id)
+                ->whereNotNull('hasil_surat_file')
+                ->latest('hasil_surat_uploaded_at')
+                ->take(5)
+                ->get();
+            
+            return view('dashboard.index', compact('stats', 'recent_permohonan', 'statusBreakdown', 'popularLayanan', 'recentUpdates', 'permohonanWithSurat'));
                 
-        } else {
-            // Untuk admin & kepala desa: tampilkan semua data
+        } elseif ($user->isAdmin()) {
+            // Untuk admin: fokus pada pengajuan yang perlu verifikasi
             $stats = [
                 'total_warga' => Warga::count(),
                 'total_permohonan' => Permohonan::count(),
-                'permohonan_baru' => Permohonan::where('status_id', 1)->count(),
+                'perlu_verifikasi' => Permohonan::whereHas('status', function($q) {
+                    $q->where('code', 'pending')->where('group_key', 'pengajuan');
+                })->count(),
+                'sudah_verifikasi' => Permohonan::whereNotNull('admin_user_id')->count(),
+                'total_layanan' => Layanan::count(),
+            ];
+
+            $recent_permohonan = Permohonan::with(['user', 'layanan', 'status'])
+                ->latest()
+                ->take(5)
+                ->get();
+            
+            $statusBreakdown = [];
+            $popularLayanan = collect();
+            $recentUpdates = collect();
+            
+            return view('dashboard.index', compact('stats', 'recent_permohonan', 'statusBreakdown', 'popularLayanan', 'recentUpdates'));
+            
+        } else {
+            // Untuk kepala desa: fokus pada approval
+            $stats = [
+                'total_warga' => Warga::count(),
+                'total_permohonan' => Permohonan::count(),
+                'menunggu_approval' => Permohonan::whereHas('status', function($q) {
+                    $q->where('code', 'menunggu_persetujuan_kades')->where('group_key', 'pengajuan');
+                })->count(),
+                'sudah_approved' => Permohonan::whereNotNull('kades_user_id')
+                    ->whereMonth('kades_approval_date', now()->month)
+                    ->count(),
                 'total_layanan' => Layanan::count(),
             ];
 

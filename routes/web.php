@@ -6,9 +6,11 @@ use App\Http\Controllers\WargaController;
 use App\Http\Controllers\KartuKeluargaController;
 use App\Http\Controllers\LayananController;
 use App\Http\Controllers\PermohonanController;
+use App\Http\Controllers\ApprovalController;
 use App\Http\Controllers\DokumenController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\FileController;
 use Illuminate\Support\Facades\Route;
 
 // ==================== PUBLIC ROUTES ====================
@@ -67,10 +69,43 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/reports/warga', [ReportController::class, 'warga'])->name('reports.warga');
     });
 
-    // ==================== PERMOHONAN ROUTES ====================
+    // ==================== PERMOHONAN/PENGAJUAN LAYANAN ROUTES ====================
 
-    // All authenticated users can view and create permohonan
+    // All authenticated users can view and create pengajuan
     Route::resource('permohonan', PermohonanController::class)->except(['edit', 'update', 'destroy']);
+    
+    // API: Get form schema for layanan (for dynamic form rendering)
+    Route::get('/api/layanan/{layanan}/form-schema', [PermohonanController::class, 'getFormSchema'])
+        ->name('api.layanan.form-schema');
+
+    // ==================== FILE OPERATIONS (SECURE DOWNLOAD/UPLOAD) ====================
+    // Secure file download and stream (all authenticated users with proper authorization)
+    Route::get('/file/{attachment}/download', [FileController::class, 'download'])
+        ->name('file.download');
+    Route::get('/file/{attachment}/stream', [FileController::class, 'stream'])
+        ->name('file.stream');
+    
+    // Upload/manage attachments (warga only, with authorization checks in controller)
+    Route::post('/permohonan/{permohonan}/upload-attachment', [PermohonanController::class, 'uploadAttachment'])
+        ->name('permohonan.upload-attachment');
+    Route::post('/attachment/{attachment}/replace', [PermohonanController::class, 'replaceAttachment'])
+        ->name('attachment.replace');
+    Route::delete('/attachment/{attachment}', [PermohonanController::class, 'deleteAttachment'])
+        ->name('attachment.delete');
+
+    // Hasil Surat Operations (Admin/Kades can upload, Warga/Admin/Kades can download)
+    Route::post('/permohonan/{permohonan}/upload-hasil-surat', [PermohonanController::class, 'uploadHasilSurat'])
+        ->middleware('role:admin,kepala_desa')
+        ->name('permohonan.upload-hasil-surat');
+    
+    Route::get('/permohonan/{permohonan}/download-hasil-surat', [PermohonanController::class, 'downloadHasilSurat'])
+        ->name('permohonan.download-hasil-surat');
+
+    // Admin can verify pengajuan (terima/tolak)
+    Route::middleware(['role:admin'])->group(function () {
+        Route::post('/permohonan/{permohonan}/verifikasi', [PermohonanController::class, 'verifikasiAdmin'])
+            ->name('permohonan.verifikasi');
+    });
 
     // Admin & Kepala Desa can manage all permohonan
     Route::middleware(['role:admin,kepala_desa'])->group(function () {
@@ -78,10 +113,21 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/permohonan/{permohonan}', [PermohonanController::class, 'update'])->name('permohonan.update');
         Route::delete('/permohonan/{permohonan}', [PermohonanController::class, 'destroy'])->name('permohonan.destroy');
         Route::post('/permohonan/{permohonan}/update-status', [PermohonanController::class, 'updateStatus'])->name('permohonan.update-status');
+        
+        // Surat Management (Auto-Generate)
+        Route::get('/surat/{permohonan}/preview', [App\Http\Controllers\SuratController::class, 'preview'])->name('surat.preview');
+        Route::post('/surat/{permohonan}/generate', [App\Http\Controllers\SuratController::class, 'generate'])->name('surat.generate');
     });
 
     // ==================== KEPALA_DESA ONLY ROUTES ====================
     Route::middleware(['role:kepala_desa'])->group(function () {
+        // Approval pengajuan layanan
+        Route::get('/approval', [ApprovalController::class, 'index'])->name('approval.index');
+        Route::get('/approval/{permohonan}', [ApprovalController::class, 'show'])->name('approval.show');
+        Route::post('/approval/{permohonan}/approve', [ApprovalController::class, 'approve'])->name('approval.approve');
+        Route::post('/approval/{permohonan}/reject', [ApprovalController::class, 'reject'])->name('approval.reject');
+        
+        // Reports
         Route::get('/reports/financial', [ReportController::class, 'financial'])->name('reports.financial');
         Route::get('/reports/performance', [ReportController::class, 'performance'])->name('reports.performance');
     });

@@ -49,51 +49,30 @@
     @forelse($layanans as $layanan)
     <div class="col-xl-3 col-lg-4 col-md-6 mb-3">
         <div class="card shadow-sm h-100 layanan-card">
-            <div class="card-header py-2 px-3">
-                <h6 class="m-0 fw-bold text-primary" style="font-size: 0.9rem; line-height: 1.2;">{{ $layanan->nama_layanan }}</h6>
-                <small class="text-muted" style="font-size: 0.75rem;">{{ $layanan->kategori }}</small>
+            <div class="card-body">
+                <h6 class="card-title fw-bold text-primary">{{ $layanan->nama_layanan }}</h6>
+                <span class="badge bg-info mb-2">{{ $layanan->kategori }}</span>
+                <p class="card-text small text-muted">{{ Str::limit($layanan->deskripsi, 100) }}</p>
             </div>
-            <div class="card-body py-2 px-3">
-                <p class="card-text mb-2" style="font-size: 0.8rem; line-height: 1.3; min-height: 40px;">
-                    {{ Str::limit($layanan->deskripsi, 80) }}
-                </p>
-                
-                <div class="row text-center small">
-                    <div class="col-6 border-end">
-                        <div class="text-muted" style="font-size: 0.7rem;">Durasi</div>
-                        <div class="fw-bold text-info" style="font-size: 0.8rem;">{{ $layanan->durasi_proses }}</div>
-                    </div>
-                    <div class="col-6">
-                        <div class="text-muted" style="font-size: 0.7rem;">Biaya</div>
-                        <div class="fw-bold {{ $layanan->biaya == 'Gratis' ? 'text-success' : 'text-warning' }}" style="font-size: 0.8rem;">
-                            {{ $layanan->biaya }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card-footer bg-transparent py-2 px-3">
+            <div class="card-footer bg-transparent border-top-0">
                 <div class="d-flex justify-content-between align-items-center">
-                    <a href="{{ route('layanan.show', $layanan->id) }}" class="btn btn-sm btn-outline-info" title="Detail">
-                        <i class="fas fa-eye"></i>
-                    </a>
-                    
                     @if(auth()->user()->isWarga())
                     <a href="{{ route('permohonan.create') }}?layanan_id={{ $layanan->id }}" 
-                       class="btn btn-sm btn-outline-success" title="Ajukan Permohonan">
-                        <i class="fas fa-file-alt"></i>
+                       class="btn btn-sm btn-outline-success w-100" title="Ajukan Permohonan">
+                        <i class="fas fa-file-alt me-1"></i>Ajukan
                     </a>
                     @endif
                     
                     @if(auth()->user()->isAdmin() || auth()->user()->isKepalaDesa())
-                    <div class="d-flex gap-1">
-                        <a href="{{ route('layanan.edit', $layanan->id) }}" class="btn btn-sm btn-outline-warning" title="Edit">
+                    <div class="btn-group w-100">
+                        <a href="{{ route('layanan.edit', $layanan->id) }}" class="btn btn-sm btn-outline-warning w-50" title="Edit">
                             <i class="fas fa-edit"></i>
                         </a>
                         <form action="{{ route('layanan.destroy', $layanan->id) }}" method="POST" 
-                              onsubmit="return confirm('Hapus layanan {{ $layanan->nama_layanan }}?')">
+                              onsubmit="return confirm('Hapus layanan {{ $layanan->nama_layanan }}?')" class="w-50">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus">
+                            <button type="submit" class="btn btn-sm btn-outline-danger w-100" title="Hapus">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </form>

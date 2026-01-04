@@ -33,8 +33,16 @@
             Anda login sebagai <strong>Administrator</strong>. Kelola data warga, layanan, dan permohonan dengan mudah.
         @elseif(auth()->user()->isKepalaDesa())
             Anda login sebagai <strong>Kepala Desa</strong>. Pantau kinerja dan akses laporan lengkap.
+            Anda login sebagai <strong>Kepala Desa</strong>. Pantau kinerja dan akses laporan lengkap.
+    </p>
+</div>
+
+<!-- Quick Actions untuk Kepala Desa -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow">
             <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+                <h6 class="m-0 font-weight-bold text-primary">Aksi Cepat</h6>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -95,6 +103,41 @@
 </div>
 @endif
 
+<!-- Surat Hasil Tersedia (Warga only) -->
+@if(auth()->user()->isWarga() && isset($permohonanWithSurat) && $permohonanWithSurat->count() > 0)
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow border-success">
+            <div class="card-header py-3 bg-success text-white">
+                <h6 class="m-0 font-weight-bold">
+                    <i class="fas fa-file-download me-2"></i>Surat Hasil Tersedia
+                </h6>
+            </div>
+            <div class="card-body">
+                <p class="mb-3">Permohonan berikut sudah memiliki surat hasil yang dapat Anda download:</p>
+                <div class="list-group">
+                    @foreach($permohonanWithSurat as $item)
+                    <a href="{{ route('permohonan.show', $item->id) }}" 
+                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">{{ $item->layanan->nama_layanan }}</h6>
+                            <small class="text-muted">
+                                No. Resi: {{ $item->nomor_resi }} | 
+                                Diupload: {{ $item->hasil_surat_uploaded_at?->format('d/m/Y') ?? '-' }}
+                            </small>
+                        </div>
+                        <span class="badge bg-success">
+                            <i class="fas fa-download me-1"></i>Download
+                        </span>
+                    </a>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endif
+
 <!-- Recent Permohonan -->
 <div class="row">
     <div class="col-12">
@@ -140,10 +183,14 @@
                                     <td>
                                         @php
                                             $statusClass = [
-                                                'baru' => 'bg-warning',
-                                                'diproses' => 'bg-primary',
+                                                // New pengajuan statuses
+                                                'pending' => 'bg-warning',
+                                                'menunggu_persetujuan_kades' => 'bg-info',
                                                 'ditolak' => 'bg-danger', 
-                                                'selesai' => 'bg-success'
+                                                'selesai' => 'bg-success',
+                                                // Old statuses for backward compatibility
+                                                'baru' => 'bg-warning',
+                                                'diproses' => 'bg-primary'
                                             ][$permohonan->status->code] ?? 'bg-secondary';
                                         @endphp
                                         <span class="badge {{ $statusClass }}">

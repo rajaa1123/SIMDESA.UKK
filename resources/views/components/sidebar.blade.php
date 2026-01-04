@@ -37,9 +37,18 @@
         <li class="nav-item">
             <a class="nav-link text-white {{ request()->is('permohonan*') ? 'active' : '' }}" 
                href="{{ route('permohonan.index') }}">
-                <i class="fas fa-file-alt me-2"></i>Permohonan
+                <i class="fas fa-file-invoice me-2"></i>Pengajuan Layanan
             </a>
         </li>
+        
+        @if(auth()->user()->isKepalaDesa())
+        <li class="nav-item">
+            <a class="nav-link text-white {{ request()->is('approval*') ? 'active' : '' }}" 
+               href="{{ route('approval.index') }}">
+                <i class="fas fa-check-circle me-2"></i>Approval Layanan
+            </a>
+        </li>
+        @endif
         
         @if(auth()->user()->isAdmin() || auth()->user()->isKepalaDesa())
         <li class="nav-item">

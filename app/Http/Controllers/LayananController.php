@@ -26,8 +26,6 @@ class LayananController extends Controller
             'nama_layanan' => 'required|max:255',
             'kategori' => 'required',
             'deskripsi' => 'required',
-            'durasi_proses' => 'required|integer',
-            'biaya' => 'required|numeric',
         ]);
 
         $layanan = Layanan::create($validated);
@@ -53,8 +51,6 @@ class LayananController extends Controller
             'nama_layanan' => 'required|max:255',
             'kategori' => 'required',
             'deskripsi' => 'required',
-            'durasi_proses' => 'required|integer',
-            'biaya' => 'required|numeric',
         ]);
 
         $layanan->update($validated);

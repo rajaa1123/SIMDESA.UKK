@@ -44,32 +44,6 @@
                             <th>Kategori</th>
                             <td>
                                 <span class="badge bg-info">{{ $layanan->kategori }}</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Deskripsi</th>
-                            <td>{{ $layanan->deskripsi }}</td>
-                        </tr>
-                        <tr>
-                            <th>Durasi Proses</th>
-                            <td>
-                                <span class="badge bg-primary">{{ $layanan->durasi_proses }}</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Biaya</th>
-                            <td>
-                                <span class="badge bg-{{ $layanan->biaya == 'Gratis' ? 'success' : 'warning' }}">
-                                    {{ $layanan->biaya }}
-                                </span>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Persyaratan -->
-            <div class="card shadow">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-info">
                         <i class="fas fa-file-alt me-1"></i>Persyaratan
@@ -149,21 +123,5 @@
             </div>
 
             <!-- Informasi Tambahan -->
-            <div class="card shadow mt-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-info">Informasi</h6>
-                </div>
-                <div class="card-body">
-                    <small class="text-muted">
-                        <i class="fas fa-clock me-1"></i>
-                        <strong>Durasi:</strong> {{ $layanan->durasi_proses }}<br>
-                        <i class="fas fa-money-bill me-1"></i>
-                        <strong>Biaya:</strong> {{ $layanan->biaya }}<br>
-                        <i class="fas fa-calendar me-1"></i>
-                        <strong>Update:</strong> {{ $layanan->updated_at->format('d/m/Y') }}
-                    </small>
-                </div>
-            </div>
-        </div>
     </div>
 @endsection

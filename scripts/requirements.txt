@@ -1,0 +1,8 @@
+# SIMDESA Digital Signature Requirements
+
+# Core dependencies
+qrcode[pil]>=7.4.2
+cryptography>=41.0.0
+
+# Optional: For better QR code image quality
+Pillow>=10.0.0

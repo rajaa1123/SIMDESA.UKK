@@ -18,12 +18,12 @@ class ReportController extends Controller
         $stats = [
             'total_permohonan' => Permohonan::count(),
             'permohonan_pending' => Permohonan::whereHas('status', function($q) {
-                $q->where('code', 'pending');
+                $q->where('code', 'pending')->where('group_key', 'pengajuan');
             })->count(),
             'total_warga' => Warga::count(),
             'total_users' => User::count(),
             'permohonan_selesai' => Permohonan::whereHas('status', function($q) {
-                $q->where('code', 'selesai');
+                $q->where('code', 'selesai')->where('group_key', 'pengajuan');
             })->count(),
             'total_layanan' => Layanan::count(),
         ];
@@ -33,7 +33,7 @@ class ReportController extends Controller
 
     public function permohonan(Request $request)
     {
-        $query = Permohonan::with(['user', 'layanan', 'status']);
+        $query = Permohonan::with(['user', 'layanan', 'status', 'adminUser', 'kadesUser']);
         
         // Filter by date range
         if ($request->filled('tanggal_mulai') && $request->filled('tanggal_selesai')) {
@@ -55,20 +55,20 @@ class ReportController extends Controller
         
         $permohonans = $query->latest()->paginate(20);
         
-        // Statistics
+        // Statistics - using new pengajuan status
         $stats = [
             'total' => Permohonan::count(),
             'pending' => Permohonan::whereHas('status', function($q) {
-                $q->where('code', 'pending');
+                $q->where('code', 'pending')->where('group_key', 'pengajuan');
             })->count(),
-            'diproses' => Permohonan::whereHas('status', function($q) {
-                $q->where('code', 'diproses');
+            'menunggu_kades' => Permohonan::whereHas('status', function($q) {
+                $q->where('code', 'menunggu_persetujuan_kades')->where('group_key', 'pengajuan');
             })->count(),
             'selesai' => Permohonan::whereHas('status', function($q) {
-                $q->where('code', 'selesai');
+                $q->where('code', 'selesai')->where('group_key', 'pengajuan');
             })->count(),
             'ditolak' => Permohonan::whereHas('status', function($q) {
-                $q->where('code', 'ditolak');
+                $q->where('code', 'ditolak')->where('group_key', 'pengajuan');
             })->count(),
         ];
         
@@ -78,7 +78,8 @@ class ReportController extends Controller
             ->groupBy('layanan_id')
             ->get();
         
-        $statuses = Status::where('group_key', 'permohonan')->get();
+        // Get both old and new statuses for filter compatibility
+        $statuses = Status::whereIn('group_key', ['permohonan', 'pengajuan'])->get();
         $layanans = Layanan::all();
         
         return view('reports.permohonan', compact('permohonans', 'stats', 'perLayanan', 'statuses', 'layanans'));

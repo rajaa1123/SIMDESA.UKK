@@ -1,0 +1,6 @@
+# Ignore private RSA key - NEVER commit this!
+storage/keys/kades_private.pem
+storage/keys/kades_public.pem
+
+# QR codes (optional - can be regenerated)
+storage/app/public/qr/*.png

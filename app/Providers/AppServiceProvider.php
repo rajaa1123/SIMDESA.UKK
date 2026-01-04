@@ -3,6 +3,9 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Gate;
+use App\Models\Attachment;
+use App\Policies\AttachmentPolicy;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +22,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Register AttachmentPolicy
+        Gate::policy(Attachment::class, AttachmentPolicy::class);
+        
+        // Register SuratPolicy gate
+        Gate::define('manageSurat', [\App\Policies\SuratPolicy::class, 'manageSurat']);
     }
 }
