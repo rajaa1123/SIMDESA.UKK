@@ -10,6 +10,18 @@
 
 // Helper function: Common personal data fields (to prevent dashes in PDF)
 $commonPersonalFields = [
+    'nama' => [
+        'type' => 'text',
+        'label' => 'Nama Lengkap (sesuai KTP)',
+        'required' => true,
+        'placeholder' => 'Nama sesuai KTP'
+    ],
+    'nik' => [
+        'type' => 'text',
+        'label' => 'NIK',
+        'required' => true,
+        'placeholder' => '16 digit NIK'
+    ],
     'tempat_lahir' => [
         'type' => 'text',
         'label' => 'Tempat Lahir',
@@ -248,8 +260,34 @@ return [
      * Surat Pengantar Nikah
      */
     'pengantar-nikah' => array_merge($commonPersonalFields, [
+        'status_perkawinan' => [
+            'type' => 'select',
+            'label' => 'Status Perkawinan',
+            'required' => true,
+            'options' => ['Jejaka', 'Perawan', 'Duda', 'Janda']
+        ],
         'nama_calon_pasangan' => ['type' => 'text', 'label' => 'Nama Calon Pasangan', 'required' => true],
-        'tanggal_rencana_nikah' => ['type' => 'date', 'label' => 'Tanggal Rencana Pernikahan', 'required' => false],
+        'tempat_lahir_pasangan' => ['type' => 'text', 'label' => 'Tempat Lahir Pasangan', 'required' => true],
+        'tanggal_lahir_pasangan' => ['type' => 'date', 'label' => 'Tanggal Lahir Pasangan', 'required' => true],
+        'warga_negara_pasangan' => ['type' => 'text', 'label' => 'Warga Negara Pasangan', 'required' => true, 'placeholder' => 'Indonesia'],
+        'agama_pasangan' => [
+            'type' => 'select',
+            'label' => 'Agama Pasangan',
+            'required' => true,
+            'options' => ['Islam', 'Kristen', 'Katolik', 'Hindu', 'Buddha', 'Konghucu']
+        ],
+        'pekerjaan_pasangan' => ['type' => 'text', 'label' => 'Pekerjaan Pasangan', 'required' => true],
+        'alamat_pasangan' => ['type' => 'textarea', 'label' => 'Alamat Pasangan', 'required' => true],
+        'nama_ayah' => ['type' => 'text', 'label' => 'Nama Lengkap Ayah', 'required' => true],
+        'nama_ibu' => ['type' => 'text', 'label' => 'Nama Lengkap Ibu', 'required' => true],
+    ]),
+
+    /**
+     * Surat Pengantar SKCK
+     */
+    'skck' => array_merge($commonPersonalFields, [
+        'keperluan' => ['type' => 'text', 'label' => 'Keperluan', 'required' => true, 'placeholder' => 'Contoh: Melamar Pekerjaan, Mendaftar CPNS'],
+        'keterangan_lain' => ['type' => 'textarea', 'label' => 'Keterangan Lain', 'required' => false],
     ]),
 
     /**

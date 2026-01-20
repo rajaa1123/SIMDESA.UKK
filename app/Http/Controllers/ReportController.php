@@ -64,6 +64,9 @@ class ReportController extends Controller
             'menunggu_kades' => Permohonan::whereHas('status', function($q) {
                 $q->where('code', 'menunggu_persetujuan_kades')->where('group_key', 'pengajuan');
             })->count(),
+            'diproses' => Permohonan::whereHas('status', function($q) {
+                $q->where('code', 'menunggu_persetujuan_kades')->where('group_key', 'pengajuan');
+            })->count(),
             'selesai' => Permohonan::whereHas('status', function($q) {
                 $q->where('code', 'selesai')->where('group_key', 'pengajuan');
             })->count(),
@@ -103,51 +106,55 @@ class ReportController extends Controller
 
     public function financial(Request $request)
     {
-        // Hanya bisa diakses oleh kepala desa
-        $query = Permohonan::with(['layanan', 'user'])
-            ->where('biaya_admin', '>', 0);
+        // Hanya bisa diakses oleh kepala desa / admin
+        $query = \App\Models\Keuangan::with(['permohonan.layanan', 'user']);
             
         // Filter by date range
         if ($request->filled('tanggal_mulai') && $request->filled('tanggal_selesai')) {
-            $query->whereBetween('created_at', [
+            $query->whereBetween('tanggal', [
                 $request->tanggal_mulai,
-                $request->tanggal_selesai . ' 23:59:59'
+                $request->tanggal_selesai
             ]);
         }
+
+        // Filter by type (default to all or specific if filtered)
+        if ($request->filled('tipe')) {
+            $query->where('tipe', $request->tipe);
+        }
             
-        $financials = $query->latest()->paginate(20);
+        $financials = $query->latest('tanggal')->latest('id')->paginate(20);
         
-        // Total pendapatan
-        $totalPendapatan = $query->sum('biaya_admin');
+        // Stats calculations
+        $totalMasuk = (clone $query)->where('tipe', 'masuk')->sum('jumlah');
+        $totalKeluar = (clone $query)->where('tipe', 'keluar')->sum('jumlah');
+        $saldo = $totalMasuk - $totalKeluar;
         
-        // Pendapatan bulan ini
-        $pendapatanBulanIni = Permohonan::whereMonth('created_at', now()->month)
-            ->whereYear('created_at', now()->year)
-            ->sum('biaya_admin');
-            
-        // Rata-rata per permohonan
-        $rataRata = $query->count() > 0 ? $totalPendapatan / $query->count() : 0;
-        
-        // Pendapatan per bulan (6 bulan terakhir)
-        $pendapatanPerBulan = Permohonan::select(
-                DB::raw('MONTH(created_at) as bulan'),
-                DB::raw('YEAR(created_at) as tahun'),
-                DB::raw('SUM(biaya_admin) as total')
+        // Monthly trend (6 months)
+        $monthlyData = \App\Models\Keuangan::select(
+                DB::raw('MONTH(tanggal) as bulan'),
+                DB::raw('YEAR(tanggal) as tahun'),
+                DB::raw('SUM(CASE WHEN tipe = "masuk" THEN jumlah ELSE 0 END) as total_masuk'),
+                DB::raw('SUM(CASE WHEN tipe = "keluar" THEN jumlah ELSE 0 END) as total_keluar')
             )
-            ->where('biaya_admin', '>', 0)
-            ->where('created_at', '>=', now()->subMonths(6))
+            ->where('tanggal', '>=', now()->subMonths(6))
             ->groupBy('tahun', 'bulan')
             ->orderBy('tahun')
             ->orderBy('bulan')
             ->get();
         
         $stats = [
-            'total' => $totalPendapatan,
-            'bulan_ini' => $pendapatanBulanIni,
-            'rata_rata' => $rataRata,
+            'total_masuk' => $totalMasuk,
+            'total_keluar' => $totalKeluar,
+            'saldo' => $saldo,
+            'bulan_ini' => \App\Models\Keuangan::whereMonth('tanggal', now()->month)
+                            ->whereYear('tanggal', now()->year)
+                            ->where('tipe', 'masuk')
+                            ->sum('jumlah'),
         ];
         
-        return view('reports.financial', compact('financials', 'stats', 'pendapatanPerBulan'));
+        $bulanNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'July', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+
+        return view('reports.financial', compact('financials', 'stats', 'monthlyData', 'bulanNames'));
     }
 
     public function performance()

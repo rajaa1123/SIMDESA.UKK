@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Pagination\Paginator;
 use App\Models\Attachment;
 use App\Policies\AttachmentPolicy;
 
@@ -25,7 +26,11 @@ class AppServiceProvider extends ServiceProvider
         // Register AttachmentPolicy
         Gate::policy(Attachment::class, AttachmentPolicy::class);
         
+        
         // Register SuratPolicy gate
         Gate::define('manageSurat', [\App\Policies\SuratPolicy::class, 'manageSurat']);
+
+        // Use Bootstrap 5 for Pagination (Fixes oversized icons)
+        Paginator::useBootstrapFive();
     }
 }

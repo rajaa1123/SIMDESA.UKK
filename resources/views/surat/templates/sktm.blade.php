@@ -1,13 +1,15 @@
 @extends('surat.base')
 
-@section('content')
-<p>Yang bertanda tangan di bawah ini Kepala Desa {{ $kelurahan }}, Kecamatan {{ $kecamatan }}, Kabupaten {{ $kabupaten }}, menerangkan dengan sebenarnya bahwa:</p>
+@section('compact_class', 'compact')
 
-<table style="width: 100%;">
+@section('content')
+<p>Yang bertanda tangan di bawah ini Kepala Desa {{ $kelurahan }}, Kecamatan {{ $kecamatan }}, Kabupaten {{ $kabupaten }}, dengan ini menerangkan bahwa:</p>
+
+<table style="width: 100%; margin-bottom: 5px;">
     <tr>
         <td style="width: 30%;">Nama Lengkap</td>
         <td style="width: 2%;">:</td>
-        <td style="width: 68%;">{{ $nama }}</td>
+        <td style="width: 68%; font-weight: bold;">{{ strtoupper($nama) }}</td>
     </tr>
     <tr>
         <td>NIK</td>
@@ -41,9 +43,9 @@
     </tr>
 </table>
 
-<p>Berdasarkan data yang ada pada kami dan pengamatan di lapangan, orang tersebut di atas tergolong keluarga <strong>TIDAK MAMPU / MISKIN</strong>.</p>
+<p style="text-indent: 45px;">Berdasarkan data kependudukan yang ada pada kami serta hasil pemantauan dan pengamatan di lapangan, nama tersebut di atas adalah benar-benar penduduk Desa {{ $kelurahan }} Kecamatan {{ $kecamatan }} yang berasal dari keluarga dengan status sosial ekonomi <strong>TIDAK MAMPU (MISKIN)</strong>.</p>
 
-<p>Surat keterangan ini diberikan untuk keperluan: <strong>{{ $form_data['keperluan_sktm'] ?? '-' }}</strong>.</p>
+<p style="text-indent: 45px;">Surat keterangan ini diberikan kepada yang bersangkutan untuk memenuhi persyaratan: <strong>{{ strtoupper($form_data['keperluan_sktm'] ?? '-') }}</strong>.</p>
 
-<p>Demikian Surat Keterangan Tidak Mampu (SKTM) ini dibuat dengan sebenarnya untuk dapat dipergunakan sebagaimana mestinya.</p>
+<p style="text-indent: 45px;">Demikian Surat Keterangan Tidak Mampu (SKTM) ini kami buat dengan sebenarnya untuk dapat dipergunakan sebagaimana mestinya, dan kepada instansi terkait dimohon dapat memberikan fasilitas sesuai dengan ketentuan yang berlaku.</p>
 @endsection

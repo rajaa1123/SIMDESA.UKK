@@ -63,14 +63,6 @@
                                     </span>
                                 </td>
                             </tr>
-                            <tr>
-                                <th>Biaya Admin</th>
-                                <td>
-                                    <strong class="{{ $permohonan->biaya_admin > 0 ? 'text-warning' : 'text-success' }}">
-                                        Rp {{ number_format($permohonan->biaya_admin, 0, ',', '.') }}
-                                    </strong>
-                                </td>
-                            </tr>
                             @if($permohonan->tanggal_selesai)
                             <tr>
                                 <th>Tanggal Selesai</th>
@@ -160,10 +152,18 @@
                     </table>
 
                     <div class="d-flex gap-2">
-                        <a href="{{ route('permohonan.download-hasil-surat', $permohonan) }}" 
-                           class="btn btn-success btn-sm">
-                            <i class="fas fa-download me-1"></i>Download Surat Hasil
-                        </a>
+                        @if(auth()->user()->isWarga() && !$permohonan->isSelesai())
+                            <div class="alert alert-warning py-2 mb-0 d-flex align-items-center small">
+                                <i class="fas fa-lock me-2"></i>
+                                <span>Surat dapat didownload setelah disetujui Kepala Desa (Status: Selesai).</span>
+                            </div>
+                        @else
+                            <a href="{{ route('permohonan.download-hasil-surat', $permohonan) }}" 
+                               class="btn btn-success btn-sm">
+                                <i class="fas fa-download me-1"></i>
+                                {{ $permohonan->isSelesai() ? 'Download Surat Sah' : 'Download Draft Surat' }}
+                            </a>
+                        @endif
                         
                         @if(auth()->user()->isAdmin() || auth()->user()->isKepalaDesa())
                             <button type="button" class="btn btn-warning btn-sm" 
@@ -231,6 +231,44 @@
                 @endif
             </div>
         </div>
+
+        <!-- Digital Signature Verification (BSRE Simulation) -->
+        @if($permohonan->is_signed_electronically || $permohonan->kades_digital_signature)
+        <div class="card shadow-sm mb-3 border-primary bg-light">
+            <div class="card-header py-2 bg-primary text-white d-flex justify-content-between align-items-center">
+                <h6 class="m-0 fw-bold">
+                    <i class="fas fa-shield-alt me-1"></i>Verifikasi Tanda Tangan Elektronik
+                </h6>
+                <span class="badge bg-white text-primary">BSRE Verified</span>
+            </div>
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-3 text-center">
+                        @if($permohonan->kades_signature_qr_path)
+                            <img src="{{ Storage::url($permohonan->kades_signature_qr_path) }}" class="img-fluid border p-1 bg-white mb-2" style="max-width: 120px;" alt="QR Signature">
+                        @else
+                            <div class="bg-white border p-3 mb-2 d-inline-block">
+                                <i class="fas fa-qrcode fa-4x text-muted"></i>
+                            </div>
+                        @endif
+                        <div class="small text-muted">Scan untuk Verifikasi</div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="alert alert-light border-0 mb-0 py-2">
+                            <p class="small mb-1"><strong>Penandatangan:</strong> {{ $permohonan->kadesUser->name ?? 'Kepala Desa Sidokare' }}</p>
+                            <p class="small mb-1"><strong>Waktu:</strong> {{ $permohonan->kades_signature_timestamp?->format('d/m/Y H:i:s') ?? '-' }} WIB</p>
+                            <p class="small mb-1"><strong>Doc-ID:</strong> <code>{{ substr($permohonan->digital_signature_hash ?? $permohonan->kades_digital_signature, 0, 16) }}...</code></p>
+                            <hr class="my-2">
+                            <div class="d-flex align-items-center text-success">
+                                <i class="fas fa-check-circle me-2"></i>
+                                <span class="small fw-bold">Dokumen ini telah ditandatangani secara elektronik dan memiliki kekuatan hukum yang sah.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
 
         <!-- History Status -->
         <div class="card shadow-sm">

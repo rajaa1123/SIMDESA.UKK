@@ -118,12 +118,27 @@ class ApprovalController extends Controller
                 $updateData['kades_digital_signature'] = $signatureData['signature'];
                 $updateData['kades_signature_qr_path'] = $signatureData['qr_path'];
                 $updateData['kades_signature_timestamp'] = now();
+                $updateData['is_signed_electronically'] = true;
+                $updateData['digital_signature_hash'] = $signatureData['signature'];
             }
             
             $permohonan->update($updateData);
 
-            // **NOTIFICATION to warga**
-            $this->notifyWarga($permohonan);
+            // **NOTIFICATION to warga using EMAIL**
+            try {
+                \Mail::to($permohonan->user)->send(new \App\Mail\SuratSelesai($permohonan));
+                
+                \Log::info('Email notification sent to warga', [
+                    'permohonan_id' => $permohonan->id,
+                    'email' => $permohonan->user->email
+                ]);
+            } catch (\Exception $e) {
+                // Don't fail the approval if email fails
+                \Log::error('Failed to send email notification', [
+                    'permohonan_id' => $permohonan->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
 
             // **AUTO-REGENERATE SURAT with digital signature QR code (if available)**
             try {
@@ -138,7 +153,7 @@ class ApprovalController extends Controller
             }
 
             return redirect()->route('approval.index')
-                ->with('success', 'Pengajuan layanan berhasil disetujui. Surat telah diperbarui.');
+                ->with('success', 'Pengajuan layanan berhasil disetujui. Surat telah diperbarui dan notifikasi email telah dikirim.');
 
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal menyetujui pengajuan: ' . $e->getMessage());
@@ -152,20 +167,12 @@ class ApprovalController extends Controller
     private function generateDigitalSignature($permohonan, $kades)
     {
         try {
-            // Create verification data for QR code
-            $verificationData = [
-                'nomor_resi' => $permohonan->nomor_resi,
-                'layanan' => $permohonan->layanan->nama_layanan,
-                'pemohon' => $permohonan->user->name,
-                'disetujui_oleh' => $kades->name,
-                'tanggal_approval' => now()->format('d/m/Y H:i'),
-                'status' => 'APPROVED'
-            ];
+            // Create verification URL for QR code
+            // We encode the ID to make it look a bit more "code-like", but it's not encrypted
+            $verificationCode = base64_encode($permohonan->id);
+            $qrContent = route('surat.verify', ['code' => $verificationCode]);
             
-            // Create QR code content (JSON)
-            $qrContent = json_encode($verificationData);
-            
-            // Generate simple signature string
+            // Generate simple signature string (hash of the content)
             $signature = hash('sha256', $qrContent . config('app.key'));
             
             // Generate QR code using BaconQrCode (pure PHP, no GD needed)
@@ -176,13 +183,20 @@ class ApprovalController extends Controller
             $writer = new \BaconQrCode\Writer($renderer);
             $qrCodeSvg = $writer->writeString($qrContent);
             
+            // Ensure directory exists
+            $dir = storage_path('app/public/signatures/qr');
+            if (!file_exists($dir)) {
+                mkdir($dir, 0755, true);
+            }
+            
             // Convert SVG to PNG using Imagick or save as SVG
             $qrPath = 'signatures/qr/permohonan_' . $permohonan->id . '.svg';
             \Storage::disk('public')->put($qrPath, $qrCodeSvg);
             
             \Log::info('QR code generated successfully', [
                 'permohonan_id' => $permohonan->id,
-                'qr_path' => $qrPath
+                'qr_path' => $qrPath,
+                'content' => $qrContent
             ]);
             
             return [

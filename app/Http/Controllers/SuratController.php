@@ -73,15 +73,19 @@ class SuratController extends Controller
         $pdf = Pdf::loadView("surat.templates.{$templateSlug}", $data);
         $pdf->setPaper('a4', 'portrait');
         
-        // Convert to base64
-        $pdfContent = base64_encode($pdf->output());
+        // Save to STORAGE (Disk)
+        $filename = "Surat_{$permohonan->layanan->nama_layanan}_{$permohonan->id}.pdf";
+        $path = "surat/" . date('Y/m') . "/" . $filename;
         
-        // Save to database
+        \Storage::disk('public')->put($path, $pdf->output());
+        
+        // Save to database (Store PATH instead of Content)
         $permohonan->update([
-            'hasil_surat_file' => $pdfContent,
-            'hasil_surat_filename' => "Surat_{$permohonan->layanan->nama_layanan}_{$permohonan->id}.pdf",
+            'hasil_surat_file' => $path, // Storing PATH now
+            'hasil_surat_filename' => $filename,
             'hasil_surat_uploaded_at' => now(),
             'hasil_surat_uploaded_by' => auth()->id(),
+            'nomor_surat' => $nomorSurat,
         ]);
         
         return redirect()->route('permohonan.show', $permohonan)
@@ -95,25 +99,30 @@ class SuratController extends Controller
     {
         $warga = $permohonan->user->warga;
         $user = $permohonan->user;
+        $formData = $permohonan->form_data ?? []; // ✅ GET Form Data
         
-        // PRIORITY: Custom surat data (filled by warga in form) > Warga profile > User data > Default
-        $nama = $permohonan->surat_nama ?? $warga?->nama_lengkap ?? $user->name ?? 'NAMA BELUM DIISI';
-        $nik = $permohonan->surat_nik ?? $warga?->nik ?? 'NIK BELUM DIISI';
-        $tempat_lahir = $permohonan->surat_tempat_lahir ?? $warga?->tempat_lahir ?? '-';
+        // PRIORITY: Custom surat data (filled by warga in form) > Form Data (Dynamic) > Warga profile > User data > Default
+        $nama = $permohonan->surat_nama ?? $formData['name'] ?? $formData['nama'] ?? $formData['nama_lengkap'] ?? $warga?->nama_lengkap ?? $user->name ?? 'NAMA BELUM DIISI';
+        $nik = $permohonan->surat_nik ?? $formData['nik'] ?? $warga?->nik ?? 'NIK BELUM DIISI';
+        $tempat_lahir = $permohonan->surat_tempat_lahir ?? $formData['tempat_lahir'] ?? $warga?->tempat_lahir ?? '-';
         
         $tanggal_lahir = '-';
         if ($permohonan->surat_tanggal_lahir) {
             $tanggal_lahir = Carbon::parse($permohonan->surat_tanggal_lahir)->locale('id')->isoFormat('D MMMM YYYY');
+        } elseif (!empty($formData['tanggal_lahir'])) {
+            $tanggal_lahir = Carbon::parse($formData['tanggal_lahir'])->locale('id')->isoFormat('D MMMM YYYY');
         } elseif ($warga?->tanggal_lahir) {
             $tanggal_lahir = Carbon::parse($warga->tanggal_lahir)->locale('id')->isoFormat('D MMMM YYYY');
         }
         
-        $jenis_kelamin = $permohonan->surat_jenis_kelamin ?? $warga?->jenis_kelamin ?? '-';
-        $agama = $permohonan->surat_agama ?? $warga?->agama ?? '-';
-        $pekerjaan = $permohonan->surat_pekerjaan ?? $warga?->pekerjaan ?? '-';
-        $alamat = $permohonan->surat_alamat ?? $warga?->alamat ?? '-';
-        $rt = $permohonan->surat_rt ?? $warga?->rt ?? '-';
-        $rw = $permohonan->surat_rw ?? $warga?->rw ?? '-';
+        $jenis_kelamin = $permohonan->surat_jenis_kelamin ?? $formData['jenis_kelamin'] ?? $warga?->jenis_kelamin ?? '-';
+        $agama = $permohonan->surat_agama ?? $formData['agama'] ?? $warga?->agama ?? '-';
+        $pekerjaan = $permohonan->surat_pekerjaan ?? $formData['pekerjaan'] ?? $warga?->jenis_pekerjaan ?? '-';
+        
+        // ✅ FIX: Use alamat from form_data if available
+        $alamat = $permohonan->surat_alamat ?? $formData['alamat'] ?? $warga?->alamat ?? '-';
+        $rt = $permohonan->surat_rt ?? $formData['rt'] ?? $warga?->rt ?? '-';
+        $rw = $permohonan->surat_rw ?? $formData['rw'] ?? $warga?->rw ?? '-';
         
         return [
             'nomor_surat' => $nomorSurat,
@@ -147,7 +156,55 @@ class SuratController extends Controller
             'kades' => $permohonan->kadesUser,
             'kades_name' => $permohonan->kadesUser->name ?? 'Kepala Desa',
             'kades_signature_qr' => $this->getSignatureQrBase64($permohonan),
+            'kades_signature_qr_raw' => $this->getSignatureQrRaw($permohonan),
+            'logo_base64' => $this->getLogoBase64(),
         ];
+    }
+
+    /**
+     * Get Raw SVG content for QR code (bypasses GD requirement in some cases)
+     */
+    private function getSignatureQrRaw($permohonan)
+    {
+        if (!$permohonan->kades_signature_qr_path) {
+            return null;
+        }
+
+        $qrPath = storage_path('app/public/' . $permohonan->kades_signature_qr_path);
+        
+        if (!file_exists($qrPath)) {
+            return null;
+        }
+
+        if (pathinfo($qrPath, PATHINFO_EXTENSION) === 'svg') {
+            $svgContent = file_get_contents($qrPath);
+            // Remove XML declaration and potential doctype to avoid dompdf issues
+            $svgContent = preg_replace('/<\?xml.*?\?>/s', '', $svgContent);
+            $svgContent = preg_replace('/<!DOCTYPE.*?>/s', '', $svgContent);
+            return trim($svgContent);
+        }
+
+        return null;
+    }
+
+    /**
+     * Get Village Logo as Base64 for PDF embedding
+     */
+    private function getLogoBase64()
+    {
+        $logoPath = public_path('images/logo-sidoarjo.png');
+        
+        if (file_exists($logoPath)) {
+            try {
+                $imageData = base64_encode(file_get_contents($logoPath));
+                $mimeType = mime_content_type($logoPath);
+                return "data:{$mimeType};base64,{$imageData}";
+            } catch (\Exception $e) {
+                \Log::error('Failed to encode logo to base64', ['error' => $e->getMessage()]);
+            }
+        }
+        
+        return null;
     }
 
     /**
@@ -166,7 +223,8 @@ class SuratController extends Controller
         }
 
         $imageData = base64_encode(file_get_contents($qrPath));
-        $mimeType = mime_content_type($qrPath);
+        $extension = pathinfo($qrPath, PATHINFO_EXTENSION);
+        $mimeType = ($extension === 'svg') ? 'image/svg+xml' : mime_content_type($qrPath);
         
         return "data:{$mimeType};base64,{$imageData}";
     }
@@ -201,15 +259,19 @@ class SuratController extends Controller
         $pdf = Pdf::loadView("surat.templates.{$templateSlug}", $data);
         $pdf->setPaper('a4', 'portrait');
         
-        // Convert to base64
-        $pdfContent = base64_encode($pdf->output());
+        // Save to STORAGE (Disk)
+        $filename = "Surat_{$permohonan->layanan->nama_layanan}_{$permohonan->id}.pdf";
+        $path = "surat/" . date('Y/m') . "/" . $filename;
         
-        // Update database
+        \Storage::disk('public')->put($path, $pdf->output());
+        
+        // Update database (Store PATH)
         $permohonan->update([
-            'hasil_surat_file' => $pdfContent,
-            'hasil_surat_filename' => "Surat_{$permohonan->layanan->nama_layanan}_{$permohonan->id}.pdf",
+            'hasil_surat_file' => $path,
+            'hasil_surat_filename' => $filename,
             'hasil_surat_uploaded_at' => now(),
             'hasil_surat_uploaded_by' => auth()->id(),
+            'nomor_surat' => $nomorSurat,
         ]);
         
         \Log::info('Surat regenerated with digital signature', [
@@ -259,18 +321,25 @@ class SuratController extends Controller
             $pdf = Pdf::loadView("surat.templates.{$templateSlug}", $data);
             $pdf->setPaper('a4', 'portrait');
             
-            // Convert to base64
-            $pdfContent = base64_encode($pdf->output());
+            // Save to STORAGE (Disk)
+            $filename = "Surat_{$permohonan->layanan->nama_layanan}_{$permohonan->id}.pdf";
+            $path = "surat/" . date('Y/m') . "/" . $filename;
+            
+            \Storage::disk('public')->put($path, $pdf->output());
             
             // Save to database
             $permohonan->update([
-                'hasil_surat_file' => $pdfContent,
-                'hasil_surat_filename' => "Surat_{$permohonan->layanan->nama_layanan}_{$permohonan->id}.pdf",
+                'hasil_surat_file' => $path, // Store PATH
+                'hasil_surat_filename' => $filename,
                 'hasil_surat_uploaded_at' => now(),
                 'hasil_surat_uploaded_by' => auth()->id(),
+                'nomor_surat' => $nomorSurat,
             ]);
             
-            \Log::info('Auto-generated PDF', ['permohonan_id' => $permohonan->id]);
+            \Log::info('Auto-generated PDF saved to storage', [
+                'permohonan_id' => $permohonan->id,
+                'path' => $path
+            ]);
             
             return true;
             
@@ -284,8 +353,40 @@ class SuratController extends Controller
     }
 
     /**
-     * Helper to generate default nomor surat
+     * Public Verification Page (Scanned from QR Code)
      */
+    public function verify($code)
+    {
+        // Simple decryption/decoding logic (e.g., base64 encoded ID or just ID)
+        // For security, you might want to use ID obfuscation or a dedicated unique token column.
+        // Assuming 'code' is the permohonan ID for now or a simple base64 of it.
+        try {
+            $id = base64_decode($code);
+            // Fallback if not base64 (for backward compatibility if needed)
+            if (!is_numeric($id)) {
+                $id = $code;
+            }
+        } catch (\Exception $e) {
+            $id = $code;
+        }
+
+        $permohonan = Permohonan::with(['user.warga', 'layanan', 'kadesUser'])
+            ->find($id);
+
+        if (!$permohonan) {
+            abort(404, 'Dokumen tidak ditemukan.');
+        }
+
+        // Only show valid if status is 'selesai' (approved/signed)
+        // Ensure to check relation access safely
+        $isValid = ($permohonan->isSelesai() || ($permohonan->status && $permohonan->status->code === 'selesai')) && $permohonan->kades_user_id;
+
+        // Fallback for legacy records: generate number if null
+        $nomorSurat = $permohonan->nomor_surat ?? $this->generateNomorSurat($permohonan);
+
+        return view('surat.verifikasi', compact('permohonan', 'isValid', 'nomorSurat'));
+    }
+
     private function generateNomorSurat($permohonan)
     {
         // Format: 000/SK/DESA-SIDOKARE/ROMAN_MONTH/YEAR

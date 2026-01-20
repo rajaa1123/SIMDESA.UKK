@@ -29,8 +29,7 @@
                             @foreach($layanans as $layanan)
                                 <option value="{{ $layanan->id }}" 
                                     {{ old('layanan_id', request('layanan_id')) == $layanan->id ? 'selected' : '' }}>
-                                    {{ $layanan->nama_layanan }} 
-                                    ({{ $layanan->durasi_proses }} - {{ $layanan->biaya }})
+                                    {{ $layanan->nama_layanan }}
                                 </option>
                             @endforeach
                         </select>
@@ -214,8 +213,6 @@ document.getElementById('layanan_id').addEventListener('change', function() {
                 nama: '{{ $layanan->nama_layanan }}',
                 kategori: '{{ $layanan->kategori }}',
                 deskripsi: '{{ $layanan->deskripsi }}',
-                durasi: '{{ $layanan->durasi_proses }}',
-                biaya: '{{ $layanan->biaya }}',
                 persyaratan: [
                     @foreach($layanan->persyaratan as $syarat)
                     {
@@ -235,18 +232,8 @@ document.getElementById('layanan_id').addEventListener('change', function() {
         // Update info layanan
         layananInfo.innerHTML = `
             <h6 class="fw-bold">${data.nama}</h6>
-            <span class="badge bg-info">${data.kategori}</span>
-            <p class="small mt-2">${data.deskripsi}</p>
-            <div class="row text-center small">
-                <div class="col-6 border-end">
-                    <div class="text-muted">Durasi</div>
-                    <div class="fw-bold text-info">${data.durasi}</div>
-                </div>
-                <div class="col-6">
-                    <div class="text-muted">Biaya</div>
-                    <div class="fw-bold ${data.biaya === 'Gratis' ? 'text-success' : 'text-warning'}">${data.biaya}</div>
-                </div>
-            </div>
+            <span class="badge bg-success px-3 py-1 rounded-pill mb-2">Layanan Gratis</span>
+            <p class="small mt-1 text-muted">${data.deskripsi}</p>
         `;
 
         // Update persyaratan (Real Data)

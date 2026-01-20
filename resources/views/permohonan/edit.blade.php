@@ -46,7 +46,7 @@
                             @foreach($layanans as $layanan)
                                 <option value="{{ $layanan->id }}" 
                                     {{ old('layanan_id', $permohonan->layanan_id) == $layanan->id ? 'selected' : '' }}>
-                                    {{ $layanan->nama_layanan }} ({{ $layanan->durasi_proses }} - {{ $layanan->biaya }})
+                                    {{ $layanan->nama_layanan }}
                                 </option>
                             @endforeach
                         </select>
@@ -90,20 +90,6 @@
                         @enderror
                     </div>
 
-                    <!-- Biaya Admin -->
-                    <div class="mb-3">
-                        <label for="biaya_admin" class="form-label">Biaya Admin</label>
-                        <div class="input-group">
-                            <span class="input-group-text">Rp</span>
-                            <input type="number" class="form-control @error('biaya_admin') is-invalid @enderror" 
-                                   id="biaya_admin" name="biaya_admin" 
-                                   value="{{ old('biaya_admin', $permohonan->biaya_admin) }}" 
-                                   min="0" step="500">
-                        </div>
-                        @error('biaya_admin')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
 
                     <!-- Tanggal Selesai -->
                     <div class="mb-3">
@@ -167,17 +153,8 @@
             <div class="card-body">
                 <h6 class="fw-bold">{{ $permohonan->layanan->nama_layanan }}</h6>
                 <p class="small mb-2">{{ $permohonan->layanan->deskripsi }}</p>
-                <div class="row text-center small">
-                    <div class="col-6 border-end">
-                        <div class="text-muted">Durasi</div>
-                        <div class="fw-bold text-info">{{ $permohonan->layanan->durasi_proses }}</div>
-                    </div>
-                    <div class="col-6">
-                        <div class="text-muted">Biaya</div>
-                        <div class="fw-bold {{ $permohonan->layanan->biaya == 'Gratis' ? 'text-success' : 'text-warning' }}">
-                            {{ $permohonan->layanan->biaya }}
-                        </div>
-                    </div>
+                <div class="text-center small">
+                    <span class="badge bg-success px-3 py-2 rounded-pill">Layanan Gratis</span>
                 </div>
             </div>
         </div>

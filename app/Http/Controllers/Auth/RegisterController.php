@@ -51,7 +51,12 @@ class RegisterController extends Controller
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'nik' => ['required', 'string', 'size:16', 'unique:users'],
+            'phone' => ['nullable', 'string', 'max:15'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'g-recaptcha-response' => ['required', new \App\Rules\ReCaptcha],
+        ], [
+            'g-recaptcha-response.required' => 'Silakan centang reCAPTCHA untuk melanjutkan.',
         ]);
     }
 
@@ -66,6 +71,8 @@ class RegisterController extends Controller
         return User::create([
             'name' => $data['name'],
             'email' => $data['email'],
+            'nik' => $data['nik'],
+            'phone' => $data['phone'] ?? null,
             'password' => Hash::make($data['password']),
         ]);
     }

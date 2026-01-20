@@ -28,6 +28,7 @@ class KartuKeluargaController extends Controller
             'no_kk' => 'required|unique:kartu_keluarga|max:20',
             'alamat' => 'required',
             'kepala_keluarga' => 'required|max:100',
+            'status' => 'required',
         ]);
 
         KartuKeluarga::create($validated);
@@ -53,6 +54,7 @@ class KartuKeluargaController extends Controller
             'no_kk' => 'required|max:20|unique:kartu_keluarga,no_kk,' . $kartuKeluarga->id,
             'alamat' => 'required',
             'kepala_keluarga' => 'required|max:100',
+            'status' => 'required',
         ]);
 
         $kartuKeluarga->update($validated);

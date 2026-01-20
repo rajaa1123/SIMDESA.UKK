@@ -1,13 +1,13 @@
 @extends('surat.base')
 
 @section('content')
-<p>Yang bertanda tangan di bawah ini Kepala Desa {{ $kelurahan }}, Kecamatan {{ $kecamatan }}, Kabupaten {{ $kabupaten }}, menerangkan dengan sebenarnya bahwa:</p>
+<p>Yang bertanda tangan di bawah ini Kepala Desa {{ $kelurahan }}, Kecamatan {{ $kecamatan }}, Kabupaten {{ $kabupaten }}, dengan ini menerangkan bahwa:</p>
 
-<table style="width: 100%;">
+<table style="width: 100%; margin-bottom: 20px;">
     <tr>
         <td style="width: 30%;">Nama Lengkap</td>
         <td style="width: 2%;">:</td>
-        <td style="width: 68%;">{{ $nama }}</td>
+        <td style="width: 68%; font-weight: bold;">{{ strtoupper($nama) }}</td>
     </tr>
     <tr>
         <td>NIK</td>
@@ -41,9 +41,9 @@
     </tr>
 </table>
 
-<p>Orang tersebut di atas adalah benar-benar penduduk Desa {{ $kelurahan }} yang mengajukan permohonan pembuatan Kartu Tanda Penduduk (KTP) dengan jenis permohonan:</p>
+<p style="text-indent: 45px;">Berdasarkan catatan kependudukan yang ada pada kami, nama tersebut di atas adalah benar-benar penduduk Desa {{ $kelurahan }} Kecamatan {{ $kecamatan }} yang berdomisili di alamat tersebut dan telah memenuhi syarat untuk mengajukan permohonan administrasi kependudukan.</p>
 
-<h3 style="text-align: center;">{{ strtoupper($form_data['jenis_permohonan'] ?? 'KTP BARU') }}</h3>
+<p style="text-indent: 45px;">Surat pengantar ini diberikan kepada yang bersangkutan untuk dipergunakan sebagai persyaratan <strong>{{ strtoupper($form_data['jenis_permohonan'] ?? 'PERMOHONAN KTP BARU') }}</strong> di Kantor Kecamatan {{ $kecamatan }}.</p>
 
-<p>Demikian surat pengantar ini dibuat untuk dapat dipergunakan sebagai persyaratan pengurusan KTP di Kecamatan {{ $kecamatan }}.</p>
+<p style="text-indent: 45px;">Demikian surat pengantar ini kami buat dengan sebenarnya agar dapat dipergunakan sebagaimana mestinya, dan kepada pihak yang berkepentingan diharapkan dapat memberikan bantuan serta fasilitas seperlunya.</p>
 @endsection

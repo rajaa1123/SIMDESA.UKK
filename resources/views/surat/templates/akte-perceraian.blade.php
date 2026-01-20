@@ -1,13 +1,13 @@
 @extends('surat.base')
 
 @section('content')
-<p>Yang bertanda tangan di bawah ini Kepala Desa {{ $kelurahan }}, Kecamatan {{ $kecamatan }}, Kabupaten {{ $kabupaten }}, menerangkan dengan sebenarnya bahwa:</p>
+<p>Yang bertanda tangan di bawah ini Kepala Desa {{ $kelurahan }}, Kecamatan {{ $kecamatan }}, Kabupaten {{ $kabupaten }}, dengan ini menerangkan dengan sebenarnya bahwa:</p>
 
-<table style="width: 100%;">
+<table style="width: 100%; margin-bottom: 20px;">
     <tr>
         <td style="width: 30%;">Nama Lengkap</td>
         <td style="width: 2%;">:</td>
-        <td style="width: 68%;">{{ $nama }}</td>
+        <td style="width: 68%; font-weight: bold;">{{ strtoupper($nama) }}</td>
     </tr>
     <tr>
         <td>NIK</td>
@@ -21,13 +21,13 @@
     </tr>
 </table>
 
-<p>Telah resmi bercerai dengan:</p>
+<p style="text-indent: 45px;">Berdasarkan putusan pengadilan yang sah, nama tersebut di atas telah dinyatakan resmi bercerai dengan:</p>
 
-<table style="width: 100%;">
+<table style="width: 100%; margin-bottom: 20px;">
     <tr>
         <td style="width: 30%;">Nama Mantan Pasangan</td>
         <td style="width: 2%;">:</td>
-        <td style="width: 68%;">{{ $form_data['nama_mantan_pasangan'] ?? '-' }}</td>
+        <td style="width: 68%; font-weight: bold;">{{ strtoupper($form_data['nama_mantan_pasangan'] ?? '-') }}</td>
     </tr>
     <tr>
         <td>Nomor Putusan</td>
@@ -41,5 +41,5 @@
     </tr>
 </table>
 
-<p>Demikian surat pengantar ini dibuat untuk dapat dipergunakan sebagai persyaratan pengurusan Akta Perceraian.</p>
+<p style="text-indent: 45px;">Demikian surat pengantar ini kami kluarkan atas dasar permohonan yang bersangkutan untuk dipergunakan sebagai persyaratan pengurusan Akta Perceraian pada Dinas Kependudukan dan Pencatatan Sipil.</p>
 @endsection

@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <style>
         :root {
             --primary-green: #2d7d3e;
@@ -146,6 +147,7 @@
 
                             <form method="POST" action="{{ route('login') }}">
                                 @csrf
+                                <input type="hidden" name="login_type" value="warga">
                                 
                                 <div class="mb-3">
                                     <label for="email" class="form-label small fw-bold text-secondary">Email</label>
@@ -181,6 +183,13 @@
                                     @endif
                                 </div>
 
+                                <div class="mb-3">
+                                    <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site_key') }}"></div>
+                                    @error('g-recaptcha-response')
+                                        <div class="invalid-feedback d-block small">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
                                 <button type="submit" class="btn btn-primary btn-login w-100 mb-3">
                                     Login Masuk
                                 </button>
@@ -203,5 +212,35 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    @if(session('unlock_at'))
+    <script>
+        // Rate Limit Countdown Timer
+        const unlockTimestamp = {{ session('unlock_at') }};
+        const errorElement = document.querySelector('.invalid-feedback');
+        
+        function updateCountdown() {
+            const now = Math.floor(Date.now() / 1000);
+            const remaining = unlockTimestamp - now;
+            
+            if (remaining <= 0) {
+                if (errorElement) {
+                    errorElement.textContent = 'Silakan coba login kembali.';
+                    errorElement.classList.remove('text-danger');
+                    errorElement.classList.add('text-success');
+                }
+                return;
+            }
+            
+            if (errorElement) {
+                errorElement.innerHTML = '<i class="fas fa-lock me-1"></i> Terlalu banyak percobaan login. Silakan coba lagi dalam <strong>' + remaining + '</strong> detik.';
+            }
+            
+            setTimeout(updateCountdown, 1000);
+        }
+        
+        updateCountdown();
+    </script>
+    @endif
 </body>
 </html>

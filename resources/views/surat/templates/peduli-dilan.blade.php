@@ -1,13 +1,13 @@
 @extends('surat.base')
 
 @section('content')
-<p>Yang bertanda tangan di bawah ini Kepala Desa {{ $kelurahan }}, Kecamatan {{ $kecamatan }}, Kabupaten {{ $kabupaten }}, menerangkan dengan sebenarnya bahwa:</p>
+<p>Yang bertanda tangan di bawah ini Kepala Desa {{ $kelurahan }}, Kecamatan {{ $kecamatan }}, Kabupaten {{ $kabupaten }}, dengan ini menerangkan dengan sebenarnya bahwa:</p>
 
-<table style="width: 100%;">
+<table style="width: 100%; margin-bottom: 20px;">
     <tr>
         <td style="width: 30%;">Nama Lengkap</td>
         <td style="width: 2%;">:</td>
-        <td style="width: 68%;">{{ $nama }}</td>
+        <td style="width: 68%; font-weight: bold;">{{ strtoupper($nama) }}</td>
     </tr>
     <tr>
         <td>NIK</td>
@@ -21,14 +21,13 @@
     </tr>
 </table>
 
-<p>Mengajukan permohonan layanan <strong>PEDULI DILAN (Pelayanan Keliling)</strong> untuk:</p>
+<p style="text-indent: 45px;">Nama tersebut di atas telah secara resmi mengajukan permohonan layanan <strong>PEDULI DILAN (Pelayanan Adminduk Keliling)</strong> untuk jenis layanan administratif sebagai berikut:</p>
 
-<h3 style="text-align: center;">{{ strtoupper($form_data['jenis_layanan_dilan'] ?? 'LAYANAN') }}</h3>
+<h3 style="text-align: center; border: 1px dashed #000; padding: 10px; margin: 15px 0;">{{ strtoupper($form_data['jenis_layanan_dilan'] ?? 'LAYANAN ADMINISTRASI KELILING') }}</h3>
 
-<p>Dengan keperluan khusus:</p>
-<p>{{ $form_data['keperluan_khusus'] ?? '-' }}</p>
+<p style="text-indent: 45px;">Keperluan Khusus : {{ $form_data['keperluan_khusus'] ?? '-' }}</p>
 
-<p>Permohonan ini telah kami catat dan akan dijadwalkan dalam kunjungan pelayanan keliling berikutnya.</p>
+<p style="text-indent: 45px;">Permohonan ini telah secara resmi kami catat and akan segera dijadwalkan dalam agenda kunjungan tim pelayanan keliling Desa {{ $kelurahan }} ke lokasi domisili pemohon.</p>
 
-<p>Demikian surat keterangan ini dibuat sebagai bukti pendaftaran layanan Peduli Dilan.</p>
+<p style="text-indent: 45px;">Demikian surat keterangan ini kami buat sebagai bukti pendaftaran layanan Peduli Dilan and agar dipergunakan sebagaimana mestinya.</p>
 @endsection

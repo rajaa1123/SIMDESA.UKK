@@ -15,6 +15,7 @@ class Layanan extends Model
         'nama_layanan',
         'kategori',
         'deskripsi',
+        'template_slug',
     ];
 
     public function persyaratan()

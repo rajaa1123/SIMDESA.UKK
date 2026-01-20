@@ -25,9 +25,11 @@ class UserSeeder extends Seeder
                 [
                     'name' => 'Administrator Desa',
                     'email' => 'admin@desa.id',
+                    'nik' => '9999999999999991',
                     'password' => Hash::make('password'),
                     'phone' => '081234567890',
                     'role_id' => $adminRole->id,
+                    'status' => 'active',
                     'email_verified_at' => now(),
                 ]
             );
@@ -45,9 +47,11 @@ class UserSeeder extends Seeder
                 [
                     'name' => 'Kepala Desa',
                     'email' => 'kades@desa.id',
+                    'nik' => '9999999999999992',
                     'password' => Hash::make('password'),
                     'phone' => '081234567891',
                     'role_id' => $kadesRole->id,
+                    'status' => 'active',
                     'email_verified_at' => now(),
                 ]
             );
@@ -65,9 +69,11 @@ class UserSeeder extends Seeder
                 [
                     'name' => 'Warga Contoh',
                     'email' => 'warga@desa.id',
+                    'nik' => '9999999999999993',
                     'password' => Hash::make('password'),
                     'phone' => '081234567892',
                     'role_id' => $wargaRole->id,
+                    'status' => 'active',
                     'email_verified_at' => now(),
                 ]
             );

@@ -20,9 +20,9 @@ class Permohonan extends Model
         'status_id',
         'keterangan',
         'nomor_resi',
+        'nomor_surat',
         'tanggal_selesai',
         'processor_user_id',
-        'biaya_admin',
         'admin_user_id',
         'admin_approval_date',
         'admin_note',
@@ -39,7 +39,9 @@ class Permohonan extends Model
         'kades_digital_signature',
         'kades_signature_qr_path',
         'kades_signature_timestamp',
-        // Custom surat data fields (filled by warga in form)
+        'is_signed_electronically',
+        'digital_signature_hash',
+        // Custom surat data fields
         'surat_nama',
         'surat_nik',
         'surat_tempat_lahir',
@@ -50,7 +52,7 @@ class Permohonan extends Model
         'surat_alamat',
         'surat_rt',
         'surat_rw',
-        // Dynamic form data (JSON)
+        // Dynamic form data
         'form_data',
     ];
 

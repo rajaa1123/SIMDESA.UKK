@@ -29,6 +29,7 @@
             </div>
         </div>
     </div>
+    
     <div class="col-md-3">
         <div class="card bg-info text-white text-center">
             <div class="card-body">
@@ -38,6 +39,7 @@
             </div>
         </div>
     </div>
+    
     <div class="col-md-3">
         <div class="card bg-success text-white text-center">
             <div class="card-body">

@@ -5,18 +5,22 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class LogAktivitas extends Model
+class PengaduanLog extends Model
 {
     use HasFactory;
 
-    protected $table = 'log_aktivitas';
-    
     protected $fillable = [
+        'pengaduan_id',
         'user_id',
-        'aktivitas',
-        'ip_address',
-        'user_agent',
+        'status_sebelumnya',
+        'status_sesudahnya',
+        'pesan'
     ];
+
+    public function pengaduan()
+    {
+        return $this->belongsTo(Pengaduan::class);
+    }
 
     public function user()
     {

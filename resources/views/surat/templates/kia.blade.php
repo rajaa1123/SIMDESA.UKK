@@ -1,13 +1,13 @@
 @extends('surat.base')
 
 @section('content')
-<p>Yang bertanda tangan di bawah ini Kepala Desa {{ $kelurahan }}, Kecamatan {{ $kecamatan }}, Kabupaten {{ $kabupaten }}, menerangkan dengan sebenarnya bahwa:</p>
+<p>Yang bertanda tangan di bawah ini Kepala Desa {{ $kelurahan }}, Kecamatan {{ $kecamatan }}, Kabupaten {{ $kabupaten }}, dengan ini menerangkan dengan sebenarnya bahwa:</p>
 
-<table style="width: 100%;">
+<table style="width: 100%; margin-bottom: 20px;">
     <tr>
         <td style="width: 30%;">Nama Orang Tua</td>
         <td style="width: 2%;">:</td>
-        <td style="width: 68%;">{{ $nama }}</td>
+        <td style="width: 68%; font-weight: bold;">{{ strtoupper($nama) }}</td>
     </tr>
     <tr>
         <td>NIK</td>
@@ -21,13 +21,13 @@
     </tr>
 </table>
 
-<p>Mengajukan permohonan pembuatan Kartu Identitas Anak (KIA) untuk anak:</p>
+<p style="text-indent: 45px;">Berdasarkan permohonan yang diajukan, nama tersebut di atas bermaksud mengurus dokumen identitas untuk anaknya:</p>
 
-<table style="width: 100%;">
+<table style="width: 100%; margin-bottom: 20px;">
     <tr>
         <td style="width: 30%;">Nama Anak</td>
         <td style="width: 2%;">:</td>
-        <td style="width: 68%;">{{ $form_data['nama_anak'] ?? '-' }}</td>
+        <td style="width: 68%; font-weight: bold;">{{ strtoupper($form_data['nama_anak'] ?? '-') }}</td>
     </tr>
     <tr>
         <td>Tanggal Lahir</td>
@@ -36,5 +36,5 @@
     </tr>
 </table>
 
-<p>Demikian surat pengantar ini dibuat untuk dapat dipergunakan sebagai persyaratan pengurusan KIA di Dinas Kependudukan dan Pencatatan Sipil.</p>
+<p style="text-indent: 45px;">Demikian surat pengantar ini kami buat dengan sebenarnya sebagai persyaratan pengajuan Kartu Identitas Anak (KIA) pada Dinas Kependudukan dan Pencatatan Sipil agar dapat diproses sebagaimana mestinya.</p>
 @endsection

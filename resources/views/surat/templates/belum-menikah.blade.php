@@ -1,13 +1,13 @@
 @extends('surat.base')
 
 @section('content')
-<p>Yang bertanda tangan di bawah ini Kepala Desa {{ $kelurahan }}, Kecamatan {{ $kecamatan }}, Kabupaten {{ $kabupaten }}, menerangkan dengan sebenarnya bahwa:</p>
+<p>Yang bertanda tangan di bawah ini Kepala Desa {{ $kelurahan }}, Kecamatan {{ $kecamatan }}, Kabupaten {{ $kabupaten }}, dengan ini menerangkan dengan sebenarnya bahwa:</p>
 
-<table style="width: 100%;">
+<table style="width: 100%; margin-bottom: 20px;">
     <tr>
         <td style="width: 30%;">Nama Lengkap</td>
         <td style="width: 2%;">:</td>
-        <td style="width: 68%;">{{ $nama }}</td>
+        <td style="width: 68%; font-weight: bold;">{{ strtoupper($nama) }}</td>
     </tr>
     <tr>
         <td>NIK</td>
@@ -41,11 +41,11 @@
     </tr>
 </table>
 
-<p>Berdasarkan data yang ada pada kami, orang tersebut di atas adalah benar-benar penduduk Desa {{ $kelurahan }} dan sampai saat ini:</p>
+<p style="text-indent: 45px;">Berdasarkan catatan register kependudukan Desa {{ $kelurahan }} serta pernyataan yang bersangkutan, bahwa nama tersebut di atas adalah benar-benar penduduk Desa {{ $kelurahan }} yang pada saat surat ini diterbitkan berstatus:</p>
 
-<h3 style="text-align: center;">BELUM MENIKAH</h3>
+<h3 style="text-align: center; border: 1px solid #000; padding: 10px; width: fit-content; margin: 20px auto;">BELUM PERNAH MENIKAH</h3>
 
-<p>Surat keterangan ini diberikan untuk keperluan: <strong>{{ $form_data['keperluan'] ?? '-' }}</strong>.</p>
+<p style="text-indent: 45px;">Surat keterangan ini diberikan untuk keperluan: <strong>{{ strtoupper($form_data['keperluan'] ?? '-') }}</strong>.</p>
 
-<p>Demikian Surat Keterangan Belum Menikah ini dibuat dengan sebenarnya untuk dapat dipergunakan sebagaimana mestinya.</p>
+<p style="text-indent: 45px;">Demikian Surat Keterangan ini kami buat dengan sebenarnya agar dapat dipergunakan sebagaimana mestinya, dan pihak yang berkepentingan diharapkan menjadikan maklum.</p>
 @endsection

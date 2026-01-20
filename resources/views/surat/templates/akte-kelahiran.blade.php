@@ -1,33 +1,35 @@
 @extends('surat.base')
 
-@section('content')
-<p>Yang bertanda tangan di bawah ini Kepala Desa {{ $kelurahan }}, Kecamatan {{ $kecamatan }}, Kabupaten {{ $kabupaten }}, menerangkan dengan sebenarnya bahwa:</p>
+@section('compact_class', 'compact')
 
-<table style="width: 100%;">
+@section('content')
+<p>Yang bertanda tangan di bawah ini Kepala Desa {{ $kelurahan }}, Kecamatan {{ $kecamatan }}, Kabupaten {{ $kabupaten }}, dengan ini menerangkan dengan sebenarnya bahwa pasangan suami istri:</p>
+
+<table style="width: 100%; margin-bottom: 5px;">
     <tr>
         <td style="width: 30%;">Nama Ayah</td>
         <td style="width: 2%;">:</td>
-        <td style="width: 68%;">{{ $form_data['nama_ayah'] ?? '-' }}</td>
+        <td style="width: 68%; font-weight: bold;">{{ strtoupper($form_data['nama_ayah'] ?? '-') }}</td>
     </tr>
     <tr>
         <td>Nama Ibu</td>
         <td>:</td>
-        <td>{{ $form_data['nama_ibu'] ?? '-' }}</td>
+        <td>{{ strtoupper($form_data['nama_ibu'] ?? '-') }}</td>
     </tr>
     <tr>
-        <td>Alamat</td>
+        <td>Alamat Orang Tua</td>
         <td>:</td>
         <td>{{ $alamat }} RT {{ $rt }} RW {{ $rw }}</td>
     </tr>
 </table>
 
-<p>Telah lahir seorang anak:</p>
+<p style="text-indent: 45px;">Berdasarkan laporan kelahiran dan catatan kependudukan Desa {{ $kelurahan }}, telah lahir seorang anak dengan identitas sebagai berikut:</p>
 
-<table style="width: 100%;">
+<table style="width: 100%; margin-bottom: 5px;">
     <tr>
         <td style="width: 30%;">Nama Anak</td>
         <td style="width: 2%;">:</td>
-        <td style="width: 68%;">{{ $form_data['nama_anak_lengkap'] ?? '-' }}</td>
+        <td style="width: 68%; font-weight: bold;">{{ strtoupper($form_data['nama_anak_lengkap'] ?? '-') }}</td>
     </tr>
     <tr>
         <td>Tempat/Tgl Lahir</td>
@@ -42,9 +44,9 @@
     <tr>
         <td>Anak Ke-</td>
         <td>:</td>
-        <td>{{ $form_data['anak_ke'] ?? '-' }}</td>
+        <td>{{ $form_data['anak_ke'] ?? '-' }} (Satu)</td>
     </tr>
 </table>
 
-<p>Demikian surat keterangan kelahiran ini dibuat untuk dapat dipergunakan sebagai persyaratan pengurusan Akta Kelahiran.</p>
+<p style="text-indent: 45px;">Demikian Surat Keterangan Lahir ini kami buat dengan sebenarnya agar dapat dipergunakan sebagai persyaratan pengurusan Akta Kelahiran pada instansi yang berwenang.</p>
 @endsection

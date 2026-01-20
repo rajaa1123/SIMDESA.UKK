@@ -94,7 +94,7 @@
                                 {{ $warga->tempat_lahir }}, 
                                 {{ \Carbon\Carbon::parse($warga->tanggal_lahir)->format('d-m-Y') }}
                             </td>
-                            <td>{{ $warga->no_hp ?? '-' }}</td>
+                            <td>{{ $warga->phone ?? '-' }}</td>
                             <td>
                                 <span class="badge bg-{{ $warga->status_hidup == 'Hidup' ? 'success' : 'danger' }}">
                                     {{ $warga->status_hidup }}

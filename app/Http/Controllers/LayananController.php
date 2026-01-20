@@ -26,6 +26,7 @@ class LayananController extends Controller
             'nama_layanan' => 'required|max:255',
             'kategori' => 'required',
             'deskripsi' => 'required',
+            'template_slug' => 'nullable|string|max:50',
         ]);
 
         $layanan = Layanan::create($validated);
@@ -51,6 +52,7 @@ class LayananController extends Controller
             'nama_layanan' => 'required|max:255',
             'kategori' => 'required',
             'deskripsi' => 'required',
+            'template_slug' => 'nullable|string|max:50',
         ]);
 
         $layanan->update($validated);

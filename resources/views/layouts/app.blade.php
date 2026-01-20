@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <meta name="theme-color" content="#2d7d3e">
     <title>SIMDESA - @yield('title', 'Dashboard')</title>
     
     <!-- Bootstrap CSS -->
@@ -69,6 +71,25 @@
             width: var(--sidebar-width);
             background-color: white;
             transition: all 0.3s;
+            overflow-y: auto;
+        }
+        
+        /* Thin Scrollbar for Sidebar */
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .sidebar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--light-green);
+            border-radius: 10px;
+        }
+        
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-green);
         }
         
         /* Sidebar Link Styling */
@@ -143,6 +164,7 @@
             display: none;
         }
         
+        
         .user-avatar {
             width: 35px;
             height: 35px;
@@ -153,6 +175,26 @@
             justify-content: center;
             color: white;
             font-weight: bold;
+        }
+
+        /* Pulse Badge Animation */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+            }
+            50% {
+                transform: scale(1.1);
+                box-shadow: 0 0 0 5px rgba(220, 53, 69, 0);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+            }
+        }
+
+        .pulse-badge {
+            animation: pulse 0.6s ease-in-out;
         }
     </style>
     
@@ -175,6 +217,12 @@
             </a>
             
             <div class="ms-auto d-flex align-items-center">
+                <!-- Real-time Clock -->
+                <div class="d-none d-lg-flex flex-column text-end me-4 text-white" style="font-size: 0.8rem; border-right: 1px solid rgba(255,255,255,0.2); padding-right: 15px;">
+                    <div id="realtime-clock" style="font-weight: 600; font-size: 0.9rem;"></div>
+                    <div id="realtime-date" style="opacity: 0.8;"></div>
+                </div>
+
                 <div class="dropdown user-dropdown">
                     <a class="nav-link d-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown">
                         <div class="text-end d-none d-md-block">
@@ -187,8 +235,7 @@
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
                         <li><h6 class="dropdown-header">Akun Saya</h6></li>
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2 text-muted"></i>Profile</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2 text-muted"></i>Pengaturan</a></li>
+                        <li><a class="dropdown-item" href="{{ route('profile') }}"><i class="fas fa-user me-2 text-muted"></i>Profile</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <form action="{{ route('logout') }}" method="POST">
@@ -247,7 +294,129 @@
                 sidebar.classList.remove('show');
             }
         });
+        // Real-time Clock Implementation
+        function updateClock() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            
+            const timeString = now.toLocaleTimeString('id-ID', { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit',
+                hour12: false 
+            });
+            const dateString = now.toLocaleDateString('id-ID', options);
+            
+            const clockElement = document.getElementById('realtime-clock');
+            const dateElement = document.getElementById('realtime-date');
+            
+            if (clockElement) clockElement.innerText = timeString + ' WIB';
+            if (dateElement) dateElement.innerText = dateString;
+        }
+        
+        setInterval(updateClock, 1000);
+        updateClock();
     </script>
+    
+    @if(auth()->user()->isAdmin() || auth()->user()->isKepalaDesa())
+    <script>
+        // Notification Badge Auto-Update (Polling every 5 seconds)
+        let previousCount = 0;
+        
+        async function updateNotificationBadge() {
+            try {
+                const response = await fetch('{{ route("api.notifications.pending") }}', {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) throw new Error('Network response was not ok');
+                
+                const data = await response.json();
+                const badge = document.getElementById('pending-badge');
+                
+                if (badge) {
+                    if (data.count > 0) {
+                        badge.textContent = data.count;
+                        badge.style.display = 'inline-block';
+                        
+                        // Add visual feedback if count increased
+                        if (data.count > previousCount) {
+                            badge.classList.add('pulse-badge');
+                        }
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                    
+                    previousCount = data.count;
+                }
+            } catch (error) {
+                console.error('Failed to fetch notifications:', error);
+            }
+        }
+        
+        // Update immediately on page load
+        updateNotificationBadge();
+        
+        // Then update every 5 seconds
+        setInterval(updateNotificationBadge, 5000);
+    </script>
+    @endif
+
+    @if(auth()->user()->isKepalaDesa())
+    <script>
+        // Approval Badge Auto-Update for Kepala Desa (Polling every 5 seconds)
+        let previousApprovalCount = 0;
+        
+        async function updateApprovalBadge() {
+            try {
+                const response = await fetch('{{ route("api.notifications.approval") }}', {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) throw new Error('Network response was not ok');
+                
+                const data = await response.json();
+                const badge = document.getElementById('approval-badge');
+                
+                if (badge) {
+                    if (data.count > 0) {
+                        badge.textContent = data.count;
+                        badge.style.display = 'inline-block';
+                        
+                        // Add visual feedback if count increased
+                        if (data.count > previousApprovalCount) {
+                            badge.classList.add('pulse-badge');
+                            setTimeout(() => badge.classList.remove('pulse-badge'), 1000);
+                        }
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                    
+                    previousApprovalCount = data.count;
+                }
+            } catch (error) {
+                console.error('Failed to fetch approval notifications:', error);
+            }
+        }
+        
+        // Update immediately on page load
+        updateApprovalBadge();
+        
+        // Then update every 5 seconds
+        setInterval(updateApprovalBadge, 5000);
+    </script>
+    @endif
     
     @stack('scripts')
 </body>

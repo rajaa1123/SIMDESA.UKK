@@ -26,8 +26,6 @@ class LayananSeeder extends Seeder
             'nama_layanan' => 'SURAT DOMISILI TEMPAT TINGGAL',
             'kategori' => 'Layanan Administrasi Umum',
             'deskripsi' => 'Surat pernyataan tempat tinggal bagi penduduk baru atau sementara.',
-            'durasi_proses' => '1-2 hari kerja',
-            'biaya' => 'Rp10.000 (materai)',
             'template_slug' => 'domisili',
         ]);
 
@@ -36,8 +34,6 @@ class LayananSeeder extends Seeder
             'nama_layanan' => 'SURAT PERNYATAAN AHLI WARIS',
             'kategori' => 'Layanan Administrasi Umum',
             'deskripsi' => 'Surat pernyataan resmi untuk menentukan ahli waris sah dari almarhum',
-            'durasi_proses' => '2-3 hari kerja',
-            'biaya' => 'Rp10.000 (materai)',
             'template_slug' => 'ahli-waris',
         ]);
 
@@ -46,8 +42,6 @@ class LayananSeeder extends Seeder
             'nama_layanan' => 'SURAT KETERANGAN RIWAYAT TANAH',
             'kategori' => 'Layanan Administrasi Umum',
             'deskripsi' => 'Surat keterangan asal-usul dan riwayat kepemilikan tanah.',
-            'durasi_proses' => '3 hari kerja',
-            'biaya' => 'Gratis',
             'template_slug' => 'riwayat-tanah',
         ]);
 
@@ -56,8 +50,6 @@ class LayananSeeder extends Seeder
             'nama_layanan' => 'SURAT KETERANGAN BEDA NAMA',
             'kategori' => 'Layanan Administrasi Umum',
             'deskripsi' => 'Surat pernyataan bahwa dua nama berbeda merujuk pada orang yang sama.',
-            'durasi_proses' => '1-2 hari kerja',
-            'biaya' => 'Gratis',
             'template_slug' => 'beda-nama',
         ]);
 
@@ -66,8 +58,6 @@ class LayananSeeder extends Seeder
             'nama_layanan' => 'SURAT KETERANGAN JANDA / DUDA',
             'kategori' => 'Layanan Administrasi Umum',
             'deskripsi' => 'Surat pernyataan status perkawinan setelah bercerai atau ditinggal pasangan.',
-            'durasi_proses' => '1-2 hari kerja',
-            'biaya' => 'Gratis',
             'template_slug' => 'janda-duda',
         ]);
 
@@ -76,8 +66,6 @@ class LayananSeeder extends Seeder
             'nama_layanan' => 'LEGALISASI DOKUMEN',
             'kategori' => 'Layanan Administrasi Umum',
             'deskripsi' => 'Pengesahan dokumen oleh kelurahan agar diakui keabsahannya.',
-            'durasi_proses' => '1 hari kerja',
-            'biaya' => 'Rp5.000-Rp10.000 per lembar',
             'template_slug' => 'legalisasi',
         ]);
 
@@ -94,8 +82,6 @@ class LayananSeeder extends Seeder
             'nama_layanan' => 'SURAT KETERANGAN DOMISILI USAHA',
             'kategori' => 'Layanan Administrasi Umum',
             'deskripsi' => 'Surat yang menyatakan keberadaan usaha di wilayah kelurahan.',
-            'durasi_proses' => '2 hari kerja',
-            'biaya' => 'Rp10.000 (materai)',
             'template_slug' => 'domisili-usaha',
         ]);
 
@@ -128,8 +114,6 @@ class LayananSeeder extends Seeder
             'nama_layanan' => 'PENANGANAN PENGADUAN MASYARAKAT',
             'kategori' => 'Layanan Administrasi Umum',
             'deskripsi' => 'Fasilitasi keluhan dan laporan warga terhadap pelayanan publik.',
-            'durasi_proses' => '1-3 hari kerja tergantung kasus',
-            'biaya' => 'Gratis',
             'template_slug' => 'pengaduan',
         ]);
 
@@ -140,8 +124,6 @@ class LayananSeeder extends Seeder
             'nama_layanan' => 'PERMOHONAN KTP ELEKTRONIK',
             'kategori' => 'Layanan Administrasi Kependudukan',
             'deskripsi' => 'Pembuatan atau pencetakan ulang e-KTP bagi warga usia 17 tahun ke atas.',
-            'durasi_proses' => '3-5 hari kerja',
-            'biaya' => 'Gratis',
             'template_slug' => 'ktp',
         ]);
 
@@ -150,8 +132,6 @@ class LayananSeeder extends Seeder
             'nama_layanan' => 'PERMOHONAN KARTU KELUARGA (KK)',
             'kategori' => 'Layanan Administrasi Kependudukan',
             'deskripsi' => 'Pembuatan KK baru atau pembaruan data anggota keluarga..',
-            'durasi_proses' => '2-3 hari kerja',
-            'biaya' => 'Gratis',
             'template_slug' => 'kk',
         ]);
 
@@ -160,8 +140,6 @@ class LayananSeeder extends Seeder
             'nama_layanan' => 'PERMOHONAN KARTU IDENTITAS ANAK (KIA)',
             'kategori' => 'Layanan Administrasi Kependudukan',
             'deskripsi' => 'Pembuatan KIA bagi anak usia di bawah 17 tahun.',
-            'durasi_proses' => '3 hari kerja',
-            'biaya' => 'Gratis',
             'template_slug' => 'kia',
         ]);
 
@@ -170,8 +148,6 @@ class LayananSeeder extends Seeder
             'nama_layanan' => 'PERMOHONAN PINDAH TEMPAT',
             'kategori' => 'Layanan Administrasi Kependudukan',
             'deskripsi' => 'Pengajuan surat pindah domisili antar wilayah.',
-            'durasi_proses' => '2-3 hari kerja',
-            'biaya' => 'Gratis',
             'template_slug' => 'pindah-tempat',
         ]);
 
@@ -180,8 +156,6 @@ class LayananSeeder extends Seeder
             'nama_layanan' => 'PERMOHONAN PEMBATALAN PINDAH',
             'kategori' => 'Layanan Administrasi Kependudukan',
             'deskripsi' => 'Pembatalan surat pindah karena perubahan rencana tempat tinggal.',
-            'durasi_proses' => '1-2 hari kerja',
-            'biaya' => 'Gratis',
             'template_slug' => 'pembatalan-pindah',
         ]);
 
@@ -190,8 +164,6 @@ class LayananSeeder extends Seeder
             'nama_layanan' => 'PERMOHONAN PINDAH DATANG',
             'kategori' => 'Layanan Administrasi Kependudukan',
             'deskripsi' => 'Pengajuan administrasi kedatangan warga dari daerah lain.',
-            'durasi_proses' => '2-3 hari kerja',
-            'biaya' => 'Gratis',
             'template_slug' => 'pindah-datang',
         ]);
 
@@ -200,8 +172,6 @@ class LayananSeeder extends Seeder
             'nama_layanan' => 'PERMOHONAN AKTE KELAHIRAN',
             'kategori' => 'Layanan Administrasi Kependudukan',
             'deskripsi' => 'Pengajuan akta kelahiran anak yang baru lahir.',
-            'durasi_proses' => '3-5 hari kerja',
-            'biaya' => 'Gratis',
             'template_slug' => 'akte-kelahiran',
         ]);
 
@@ -210,8 +180,6 @@ class LayananSeeder extends Seeder
             'nama_layanan' => 'PERMOHONAN AKTE KEMATIAN',
             'kategori' => 'Layanan Administrasi Kependudukan',
             'deskripsi' => 'Pengajuan akta kematian warga yang telah meninggal.',
-            'durasi_proses' => '3-5 hari kerja',
-            'biaya' => 'Gratis',
             'template_slug' => 'akte-kematian',
         ]);
 
@@ -220,8 +188,6 @@ class LayananSeeder extends Seeder
             'nama_layanan' => 'PERMOHONAN AKTE PERCERAIAN',
             'kategori' => 'Layanan Administrasi Kependudukan',
             'deskripsi' => 'Pengajuan akta perceraian berdasarkan putusan pengadilan.',
-            'durasi_proses' => '3-7 hari kerja',
-            'biaya' => 'Gratis',
             'template_slug' => 'akte-perceraian',
         ]);
 
@@ -230,8 +196,6 @@ class LayananSeeder extends Seeder
             'nama_layanan' => 'PERMOHONAN AKTE PERKAWINAN',
             'kategori' => 'Layanan Administrasi Kependudukan',
             'deskripsi' => 'Pengajuan akta perkawinan bagi pasangan yang telah menikah.',
-            'durasi_proses' => '3-5 hari kerja',
-            'biaya' => 'Gratis',
             'template_slug' => 'akte-perkawinan',
         ]);
 
@@ -240,8 +204,6 @@ class LayananSeeder extends Seeder
             'nama_layanan' => 'PERMOHONAN PEDULI DILAN',
             'kategori' => 'Layanan Administrasi Kependudukan',
             'deskripsi' => 'Pendaftaran program pelayanan kependudukan keliling (jemput bola).',
-            'durasi_proses' => 'Sesuai jadwal kegiatan',
-            'biaya' => 'Gratis',
             'template_slug' => 'peduli-dilan',
         ]);
     }

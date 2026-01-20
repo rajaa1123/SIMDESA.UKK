@@ -8,6 +8,7 @@ use App\Models\Status;
 use App\Models\User;
 use App\Models\Attachment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PermohonanController extends Controller
 {
@@ -222,9 +223,11 @@ class PermohonanController extends Controller
             'status_id' => 'required|exists:status,id',
             'keterangan' => 'nullable',
             'processor_user_id' => 'nullable|exists:users,id',
-            'biaya_admin' => 'nullable|numeric',
         ]);
+
         try {
+            DB::beginTransaction();
+
             if ($permohonan->status_id != $validated['status_id']) {
                 $permohonan->history()->create([
                     'from_status_id' => $permohonan->status_id,
@@ -236,11 +239,17 @@ class PermohonanController extends Controller
 
             $permohonan->update($validated);
 
+            // Ensure no financial ledger exists since it's now 100% free
+            \App\Models\Keuangan::where('permohonan_id', $permohonan->id)->delete();
+
+            DB::commit();
+
             return redirect()->route('permohonan.show', $permohonan->id)
                 ->with('success', 'Permohonan berhasil diperbarui.');
 
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Gagal memperbarui permohonan. Silakan coba lagi.']);
+            DB::rollBack();
+            return back()->withErrors(['error' => 'Gagal memperbarui permohonan: ' . $e->getMessage()]);
         }
     }
 
@@ -530,13 +539,14 @@ class PermohonanController extends Controller
         try {
             $file = $request->file('hasil_surat');
             
-            // Convert to base64
-            $fileContent = base64_encode(file_get_contents($file->getRealPath()));
+            // Save to STORAGE (Disk)
+            $filename = $file->getClientOriginalName();
+            $path = $file->storeAs('surat/' . date('Y/m'), $filename, 'public');
             
-            // Update permohonan
+            // Update permohonan (Store PATH)
             $permohonan->update([
-                'hasil_surat_file' => $fileContent,
-                'hasil_surat_filename' => $file->getClientOriginalName(),
+                'hasil_surat_file' => $path,
+                'hasil_surat_filename' => $filename,
                 'hasil_surat_uploaded_at' => now(),
                 'hasil_surat_uploaded_by' => auth()->id(),
             ]);
@@ -550,6 +560,9 @@ class PermohonanController extends Controller
     /**
      * Download hasil surat by warga (owner), admin, or kepala desa
      */
+    /**
+     * Download hasil surat by warga (owner), admin, or kepala desa
+     */
     public function downloadHasilSurat(Permohonan $permohonan)
     {
         // Authorization: Only owner (warga), admin, or kepala desa
@@ -560,6 +573,11 @@ class PermohonanController extends Controller
         if (!$isOwner && !$isAdminOrKades) {
             abort(403, 'Anda tidak memiliki akses untuk mendownload surat ini.');
         }
+        
+        // RESTRICTION: Warga cannot download if not yet approved by Kades (Status 'selesai')
+        if ($user->isWarga() && !$permohonan->isSelesai()) {
+            abort(403, 'Maaf, surat ini belum ditandatangani oleh Kepala Desa. Anda baru dapat mendownloadnya setelah status "Selesai".');
+        }
 
         // Check if hasil surat exists
         if (!$permohonan->hasHasilSurat()) {
@@ -567,14 +585,26 @@ class PermohonanController extends Controller
         }
 
         try {
-            // Decode base64 to binary
-            $fileContent = base64_decode($permohonan->hasil_surat_file);
             $filename = $permohonan->hasil_surat_filename ?? 'Surat_Hasil_' . $permohonan->nomor_resi . '.pdf';
-
-            // Return as download response
-            return response($fileContent, 200)
-                ->header('Content-Type', 'application/pdf')
-                ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+            
+            // CHECK: Is it a file path (starts with surat/) or Base64 (legacy)?
+            if (str_starts_with($permohonan->hasil_surat_file, 'surat/')) {
+                // STORAGE MODE
+                $path = $permohonan->hasil_surat_file;
+                
+                if (!\Storage::disk('public')->exists($path)) {
+                    abort(404, 'File surat fisik tidak ditemukan di server.');
+                }
+                
+                return \Storage::disk('public')->download($path, $filename);
+            } else {
+                // LEGACY BASE64 MODE
+                $fileContent = base64_decode($permohonan->hasil_surat_file);
+                
+                return response($fileContent, 200)
+                    ->header('Content-Type', 'application/pdf')
+                    ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+            }
         } catch (\Exception $e) {
             abort(500, 'Gagal mendownload surat: ' . $e->getMessage());
         }

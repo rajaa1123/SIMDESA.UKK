@@ -22,6 +22,7 @@ class User extends Authenticatable
         'warga_id',
         'name',
         'email',
+        'nik',
         'password',
         'phone',
         'role_id',
@@ -174,8 +175,5 @@ class User extends Authenticatable
         return $this->hasMany(Permohonan::class, 'processor_user_id');
     }
 
-    public function logAktivitas()
-    {
-        return $this->hasMany(LogAktivitas::class);
-    }
+
 }

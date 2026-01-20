@@ -11,22 +11,48 @@ use App\Http\Controllers\DokumenController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\PengaduanController;
+use App\Http\Controllers\KeuanganController;
+use App\Http\Controllers\BeritaController;
+use App\Http\Controllers\AssetController;
+
+use App\Http\Controllers\BackupController;
 use Illuminate\Support\Facades\Route;
 
 // ==================== PUBLIC ROUTES ====================
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [DashboardController::class, 'landing']);
+Route::get('/verifikasi-surat/{code}', [App\Http\Controllers\SuratController::class, 'verify'])->name('surat.verify');
+
 
 // Authentication Routes
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::get('/admin/login', [AuthController::class, 'showAdminLogin'])->name('admin.login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+// Forgot Password Flow
+Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->name('password.request');
+Route::post('/forgot-password', [AuthController::class, 'sendOtp'])->name('password.email');
+Route::get('/verify-otp', [AuthController::class, 'showVerifyOtp'])->name('password.otp');
+Route::post('/verify-otp', [AuthController::class, 'verifyOtp'])->name('password.verify');
+Route::get('/reset-password', [AuthController::class, 'showResetPassword'])->name('password.reset');
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
+
 // ==================== PROTECTED ROUTES ====================
 Route::middleware(['auth'])->group(function () {
+
+    // Notification API (Admin & Kepala Desa only)
+    Route::middleware(['role:admin,kepala_desa'])->group(function () {
+        Route::get('/api/notifications/pending-count', [App\Http\Controllers\NotificationController::class, 'getPendingCount'])->name('api.notifications.pending');
+        Route::get('/api/notifications/recent', [App\Http\Controllers\NotificationController::class, 'getRecentSubmissions'])->name('api.notifications.recent');
+    });
+
+    // Approval Count API (Kepala Desa only)
+    Route::middleware(['role:kepala_desa'])->group(function () {
+        Route::get('/api/notifications/approval-count', [App\Http\Controllers\NotificationController::class, 'getApprovalCount'])->name('api.notifications.approval');
+    });
 
     // Dashboard - All roles can access
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -34,7 +60,9 @@ Route::middleware(['auth'])->group(function () {
     // ==================== LAYANAN ROUTES (READ-ONLY FOR ALL) ====================
     // All authenticated users can view layanan (warga needs to see available services)
     Route::get('/layanan', [LayananController::class, 'index'])->name('layanan.index');
-    Route::get('/layanan/{layanan}', [LayananController::class, 'show'])->name('layanan.show');
+
+    // ==================== BERITA ROUTES (READ-ONLY FOR ALL) ====================
+    Route::get('/berita', [BeritaController::class, 'index'])->name('berita.index');
 
     // ==================== ADMIN & KEPALA_DESA ROUTES ====================
     Route::middleware(['role:admin,kepala_desa'])->group(function () {
@@ -42,7 +70,7 @@ Route::middleware(['auth'])->group(function () {
         // Warga Management
         Route::resource('warga', WargaController::class);
 
-        // Kartu Keluarga Management  
+        // Kartu Keluarga Management
         Route::resource('kartu-keluarga', KartuKeluargaController::class);
 
         // Layanan Management (Create, Edit, Delete for Admin/Kepala Desa only)
@@ -67,7 +95,28 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
         Route::get('/reports/permohonan', [ReportController::class, 'permohonan'])->name('reports.permohonan');
         Route::get('/reports/warga', [ReportController::class, 'warga'])->name('reports.warga');
+        Route::get('/reports/financial', [ReportController::class, 'financial'])->name('reports.financial');
+        Route::get('/reports/performance', [ReportController::class, 'performance'])->name('reports.performance');
+
+        // Keuangan Management
+        Route::resource('keuangan', KeuanganController::class);
+
+        // Asset Management
+        Route::resource('assets', AssetController::class);
+
+
+
+        // Backup Management (Admin Only)
+        Route::middleware(['role:admin'])->group(function () {
+            Route::get('/backup/download', [BackupController::class, 'download'])->name('backup.download');
+        });
+
+        // Berita Management (Admin/Kades only for create/edit/delete)
+        Route::resource('berita', BeritaController::class)->except(['index', 'show'])->parameters(['berita' => 'berita']);
     });
+
+    Route::get('/layanan/{layanan}', [LayananController::class, 'show'])->name('layanan.show');
+    Route::get('/berita/{slug}', [BeritaController::class, 'show'])->name('berita.show');
 
     // ==================== PERMOHONAN/PENGAJUAN LAYANAN ROUTES ====================
 
@@ -126,19 +175,21 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/approval/{permohonan}', [ApprovalController::class, 'show'])->name('approval.show');
         Route::post('/approval/{permohonan}/approve', [ApprovalController::class, 'approve'])->name('approval.approve');
         Route::post('/approval/{permohonan}/reject', [ApprovalController::class, 'reject'])->name('approval.reject');
-        
-        // Reports
-        Route::get('/reports/financial', [ReportController::class, 'financial'])->name('reports.financial');
-        Route::get('/reports/performance', [ReportController::class, 'performance'])->name('reports.performance');
     });
+
+    // ==================== PROFILE ROUTES ====================
+    Route::get('/profile', [UserController::class, 'profile'])->name('profile');
+    Route::get('/profile/edit', [UserController::class, 'editProfile'])->name('profile.edit');
+    Route::put('/profile/update', [UserController::class, 'updateProfile'])->name('profile.update');
 
     // ==================== WARGA ONLY ROUTES ====================
     Route::middleware(['role:warga'])->group(function () {
-        Route::get('/profile', function () {
-            return view('profile');
-        })->name('profile');
         Route::get('/my-permohonan', [PermohonanController::class, 'myPermohonan'])->name('permohonan.my');
     });
+
+    // ==================== PENGADUAN MASYARAKAT ====================
+    Route::resource('pengaduan', PengaduanController::class);
+
 });
 
 // ==================== FALLBACK ROUTE ====================

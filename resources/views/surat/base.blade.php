@@ -5,25 +5,49 @@
     <title>{{ $layanan->nama_layanan }}</title>
     <style>
         @page {
-            margin: 2cm 2.5cm;
+            margin: 1.5cm 2cm;
         }
         body {
             font-family: 'Times New Roman', serif;
             font-size: 12pt;
             line-height: 1.5;
+            color: #000;
         }
+        /* Mode Kompak untuk Surat Panjang */
+        body.compact {
+            font-size: 11pt;
+            line-height: 1.2;
+        }
+        body.compact .kop-surat {
+            margin-bottom: 10px;
+        }
+        body.compact h1 {
+            font-size: 12pt;
+            margin: 10px 0 2px 0;
+        }
+        body.compact .content {
+            margin: 10px 0;
+        }
+        body.compact table td {
+            padding: 2px 2px;
+        }
+        body.compact .ttd {
+            margin-top: 20px;
+        }
+
         .header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 0;
         }
         .kop-surat {
-            border-bottom: 3px solid #000;
-            padding-bottom: 10px;
+            border-bottom: 3px double #000;
+            padding-bottom: 5px;
             margin-bottom: 20px;
             position: relative;
+            min-height: 110px;
         }
         .logo {
-            width: 75px;
+            width: 110px;
             height: auto;
             position: absolute;
             left: 0;
@@ -32,7 +56,7 @@
         h1 {
             font-size: 14pt;
             text-decoration: underline;
-            margin: 20px 0;
+            margin: 15px 0 5px 0;
             font-weight: bold;
         }
         .content {
@@ -45,30 +69,37 @@
             border-collapse: collapse;
         }
         table td {
-            padding: 2px;
+            padding: 4px 2px;
             vertical-align: top;
         }
         .ttd {
-            margin-top: 50px;
+            margin-top: 40px;
             float: right;
             width: 300px;
             text-align: center;
         }
         .qr-code {
-            width: 90px;
-            height: 90px;
-            margin: 10px auto;
+            width: 80px;
+            height: 80px;
+            margin: 5px auto;
+        }
+        .qr-code svg {
+            width: 100%;
+            height: 100%;
+            display: block;
         }
         .clear {
             clear: both;
         }
     </style>
 </head>
-<body>
+<body class="@yield('compact_class')">
     {{-- KOP SURAT --}}
     <div class="kop-surat">
-        {{-- Logo placeholder - in real app use absolute path or base64 --}}
-        {{-- <img src="{{ public_path('images/logo-desa.png') }}" alt="Logo" class="logo"> --}}
+        {{-- Logo --}}
+        @if(!empty($logo_base64))
+            <img src="{{ $logo_base64 }}" alt="Logo" class="logo">
+        @endif
         
         <div class="header">
             <h3 style="margin: 0; font-size: 14pt;">PEMERINTAH KABUPATEN {{ $kabupaten }}</h3>
@@ -99,8 +130,12 @@
         
         @if(!empty($kades_signature_qr))
             <img src="{{ $kades_signature_qr }}" alt="Digital Signature" class="qr-code">
+        @elseif(!empty($kades_signature_qr_raw))
+            <div class="qr-code">
+                {!! $kades_signature_qr_raw !!}
+            </div>
         @else
-            <div style="height: 90px;"></div>
+            <div style="height: 80px;"></div>
         @endif
         
         <p style="font-weight: bold; text-decoration: underline;">{{ $kades_name }}</p>

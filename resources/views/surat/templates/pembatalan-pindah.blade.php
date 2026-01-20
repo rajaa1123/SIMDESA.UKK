@@ -1,13 +1,13 @@
 @extends('surat.base')
 
 @section('content')
-<p>Yang bertanda tangan di bawah ini Kepala Desa {{ $kelurahan }}, Kecamatan {{ $kecamatan }}, Kabupaten {{ $kabupaten }}, menerangkan dengan sebenarnya bahwa:</p>
+<p>Yang bertanda tangan di bawah ini Kepala Desa {{ $kelurahan }}, Kecamatan {{ $kecamatan }}, Kabupaten {{ $kabupaten }}, dengan ini menerangkan dengan sebenarnya bahwa:</p>
 
-<table style="width: 100%;">
+<table style="width: 100%; margin-bottom: 20px;">
     <tr>
         <td style="width: 30%;">Nama Lengkap</td>
         <td style="width: 2%;">:</td>
-        <td style="width: 68%;">{{ $nama }}</td>
+        <td style="width: 68%; font-weight: bold;">{{ strtoupper($nama) }}</td>
     </tr>
     <tr>
         <td>NIK</td>
@@ -21,12 +21,20 @@
     </tr>
 </table>
 
-<p>Mengajukan permohonan PEMBATALAN PINDAH atas Surat Pindah Nomor:</p>
+<p style="text-indent: 45px;">Nama tersebut di atas mengajukan permohonan <strong>PERNYATAAN PEMBATALAN PINDAH</strong> atas Surat Pengantar Pindah yang sebelumnya telah diterbitkan dengan rincian:</p>
 
-<h3 style="text-align: center;">{{ $form_data['nomor_surat_pindah'] ?? '-' }}</h3>
+<table style="width: 100%; margin-bottom: 20px;">
+    <tr>
+        <td style="width: 30%;">Nomor Surat Pindah</td>
+        <td style="width: 2%;">:</td>
+        <td style="width: 68%; font-weight: bold;">{{ $form_data['nomor_surat_pindah'] ?? '-' }}</td>
+    </tr>
+    <tr>
+        <td>Alasan Pembatalan</td>
+        <td>:</td>
+        <td style="font-style: italic;">{{ $form_data['alasan_pembatalan'] ?? '-' }}</td>
+    </tr>
+</table>
 
-<p>Dengan alasan pembatalan:</p>
-<p>{{ $form_data['alasan_pembatalan'] ?? '-' }}</p>
-
-<p>Demikian surat keterangan pembatalan pindah ini dibuat agar yang bersangkutan dapat kembali tercatat sebagai penduduk Desa {{ $kelurahan }}.</p>
+<p style="text-indent: 45px;">Demikian surat keterangan ini kami buat dengan sebenarnya agar yang bersangkutan dapat kembali tercatat secara aktif sebagai penduduk Desa {{ $kelurahan }} and dipergunakan sebagaimana mestinya pada instansi terkait.</p>
 @endsection

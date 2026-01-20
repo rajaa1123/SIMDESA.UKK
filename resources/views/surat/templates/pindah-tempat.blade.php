@@ -1,13 +1,15 @@
 @extends('surat.base')
 
-@section('content')
-<p>Yang bertanda tangan di bawah ini Kepala Desa {{ $kelurahan }}, Kecamatan {{ $kecamatan }}, Kabupaten {{ $kabupaten }}, menerangkan dengan sebenarnya bahwa:</p>
+@section('compact_class', 'compact')
 
-<table style="width: 100%;">
+@section('content')
+<p>Yang bertanda tangan di bawah ini Kepala Desa {{ $kelurahan }}, Kecamatan {{ $kecamatan }}, Kabupaten {{ $kabupaten }}, dengan ini menerangkan dengan sebenarnya bahwa:</p>
+
+<table style="width: 100%; margin-bottom: 5px;">
     <tr>
         <td style="width: 30%;">Nama Lengkap</td>
         <td style="width: 2%;">:</td>
-        <td style="width: 68%;">{{ $nama }}</td>
+        <td style="width: 68%; font-weight: bold;">{{ strtoupper($nama) }}</td>
     </tr>
     <tr>
         <td>NIK</td>
@@ -21,13 +23,13 @@
     </tr>
 </table>
 
-<p>Mengajukan permohonan PINDAH TEMPAT dengan tujuan:</p>
+<p style="text-indent: 45px;">Berdasarkan permohonan yang bersangkutan, nama tersebut di atas mengajukan permohonan <strong>PINDAH TEMPAT</strong> dari Desa {{ $kelurahan }} Kecamatan {{ $kecamatan }} dengan tujuan sebagai berikut:</p>
 
-<table style="width: 100%;">
+<table style="width: 100%; margin-bottom: 5px;">
     <tr>
         <td style="width: 30%;">Alamat Tujuan</td>
         <td style="width: 2%;">:</td>
-        <td style="width: 68%;">{{ $form_data['alamat_tujuan_lengkap'] ?? '-' }}</td>
+        <td style="width: 68%; font-style: italic;">{{ $form_data['alamat_tujuan_lengkap'] ?? '-' }}</td>
     </tr>
     <tr>
         <td>Desa/Kelurahan</td>
@@ -57,9 +59,9 @@
     <tr>
         <td>Jumlah Pengikut</td>
         <td>:</td>
-        <td>{{ $form_data['jumlah_anggota_pindah'] ?? '1' }} Orang</td>
+        <td>{{ $form_data['jumlah_anggota_pindah'] ?? '1' }} (Satu) Orang</td>
     </tr>
 </table>
 
-<p>Demikian surat pengantar pindah ini dibuat untuk dapat dipergunakan sebagai persyaratan pengurusan surat pindah di Kecamatan dan Disdukcapil.</p>
+<p style="text-indent: 45px;">Demikian Surat Pengantar Pindah Tempat ini kami buat dengan sebenarnya agar dapat dipergunakan sebagai persyaratan pengurusan administrasi kependudukan lebih lanjut di daerah tujuan serta instansi terkait lainnya.</p>
 @endsection

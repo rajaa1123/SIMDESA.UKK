@@ -79,9 +79,18 @@
                     </thead>
                     <tbody>
                         @foreach($permohonans as $permohonan)
-                        <tr>
+                        @php
+                            $isNew = $permohonan->created_at->diffInHours() < 24;
+                        @endphp
+                        <tr class="{{ $isNew ? 'table-warning' : '' }}">
                             <td class="ps-3">
-                                <span class="fw-bold text-primary">{{ $permohonan->nomor_resi }}</span>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="fw-bold text-primary">{{ $permohonan->nomor_resi }}</span>
+                                    @if($isNew)
+                                        <span class="badge bg-danger" style="font-size: 0.65rem;">BARU</span>
+                                    @endif
+                                </div>
+                                <small class="text-muted d-block">{{ $permohonan->created_at->diffForHumans() }}</small>
                             </td>
                             @if(auth()->user()->isAdmin() || auth()->user()->isKepalaDesa())
                             <td>

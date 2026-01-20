@@ -547,6 +547,40 @@
                 font-size: 1.1rem;
             }
         }
+
+        /* News Cards Styles */
+        .news-card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            height: 100%;
+            position: relative;
+            background: white;
+        }
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(45, 125, 62, 0.15);
+        }
+        .news-image {
+            height: 200px;
+            width: 100%;
+            object-fit: cover;
+        }
+        .news-category {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: rgba(255,255,255,0.9);
+            color: var(--primary-green);
+            z-index: 2;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
@@ -567,6 +601,9 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#news">Kabar Desa</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#features">Layanan</a>
                     </li>
@@ -740,6 +777,53 @@
         </div>
     </section>
 
+    <!-- Kabar Desa Section -->
+    <section class="news-section py-5 bg-light" id="news">
+        <div class="container py-4">
+            <h2 class="section-title">Kabar Desa Sidokare</h2>
+            <p class="section-subtitle">Informasi terbaru seputar kegiatan dan perkembangan desa</p>
+            
+            <div class="row g-4">
+                @forelse($latestBerita as $berita)
+                <div class="col-lg-4 col-md-6">
+                    <div class="card news-card">
+                        <span class="news-category">{{ $berita->kategori }}</span>
+                        @if($berita->gambar)
+                            <img src="{{ Storage::url($berita->gambar) }}" class="card-img-top news-image" alt="{{ $berita->judul }}">
+                        @else
+                            <div class="bg-secondary d-flex align-items-center justify-content-center news-image">
+                                <i class="fas fa-image fa-3x text-white-50"></i>
+                            </div>
+                        @endif
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-2">
+                                <small class="text-muted"><i class="far fa-calendar-alt me-1"></i> {{ $berita->published_at->format('d M Y') }}</small>
+                                <small class="text-muted"><i class="far fa-user me-1"></i> {{ $berita->user->name }}</small>
+                            </div>
+                            <h5 class="card-title fw-bold">{{ Str::limit($berita->judul, 50) }}</h5>
+                            <p class="card-text text-muted small">{{ Str::limit(strip_tags($berita->konten), 100) }}</p>
+                            <a href="{{ route('berita.show', $berita->slug) }}" class="btn btn-outline-success btn-sm stretched-link">Baca Selengkapnya</a>
+                        </div>
+                    </div>
+                </div>
+                @empty
+                <div class="col-12 text-center py-5">
+                    <div class="text-muted">
+                        <i class="fas fa-newspaper fa-3x mb-3 opacity-25"></i>
+                        <p>Belum ada kabar terbaru saat ini.</p>
+                    </div>
+                </div>
+                @endforelse
+            </div>
+            
+            <div class="text-center mt-5">
+                <a href="{{ route('berita.index') }}" class="btn btn-village-outline" style="color: var(--primary-green); border-color: var(--primary-green);">
+                    Lihat Semua Berita <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
     <!-- Stats Section -->
     <section class="stats-section" id="stats">
         <div class="container">
@@ -752,19 +836,19 @@
                 </div>
                 <div class="col-lg-3 col-md-6 mb-4">
                     <div class="stat-card">
-                        <div class="stat-number">20+</div>
+                        <div class="stat-number">{{ $stats['total_layanan'] }}+</div>
                         <div class="stat-label">Jenis Layanan Surat</div>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 mb-4">
                     <div class="stat-card">
-                        <div class="stat-number">100%</div>
-                        <div class="stat-label">Digital & Paperless</div>
+                        <div class="stat-number">{{ number_format($stats['total_warga']) }}</div>
+                        <div class="stat-label">Warga Terdaftar</div>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 mb-4">
                     <div class="stat-card">
-                        <div class="stat-number"><i class="fas fa-bolt"></i></div>
+                        <div class="stat-number">{{ $stats['proses_cepat'] }}</div>
                         <div class="stat-label">Proses Cepat</div>
                     </div>
                 </div>
@@ -832,7 +916,7 @@
                         <i class="fas fa-phone me-2"></i>(031) 123-4567
                     </p>
                     <p class="text-white-50">
-                        <i class="fas fa-envelope me-2"></i>info@sidokare.desa.id
+                        <i class="fas fa-envelope me-2"></i>desasidokareukk@gmail.com
                     </p>
                 </div>
             </div>

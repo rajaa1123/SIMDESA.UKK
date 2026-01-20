@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Role;
 use App\Models\Warga;
-use App\Models\LogAktivitas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -51,6 +50,7 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|max:100',
+            'nik' => 'required|numeric|digits:16|unique:users',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:6|confirmed',
             'phone' => 'nullable|max:20',
@@ -88,6 +88,7 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|max:100',
+            'nik' => 'required|numeric|digits:16|unique:users,nik,' . $user->id,
             'email' => 'required|email|unique:users,email,' . $user->id,
             'phone' => 'nullable|max:20',
             'role_id' => 'required|exists:roles,id',
@@ -175,15 +176,109 @@ class UserController extends Controller
     }
     
     /**
+     * Tampilan profil user saat ini
+     */
+    public function profile()
+    {
+        $user = auth()->user();
+        $user->load(['role', 'warga']);
+            
+        return view('profile', compact('user'));
+    }
+
+    /**
+     * Form edit profil mandiri
+     */
+    public function editProfile()
+    {
+        $user = auth()->user();
+        $user->load('warga');
+        return view('profile_edit', compact('user'));
+    }
+
+    /**
+     * Update profil mandiri
+     */
+    public function updateProfile(Request $request)
+    {
+        $user = auth()->user();
+        
+        $rules = [];
+        
+        // Hanya Admin yang bisa mengedit informasi akun (name, email, phone)
+        if ($user->isAdmin()) {
+            $rules = [
+                'name' => 'required|max:100',
+                'email' => 'required|email|unique:users,email,' . $user->id,
+                'phone' => 'nullable|max:20',
+            ];
+        }
+
+        if ($request->filled('password')) {
+            $rules['password'] = 'min:6|confirmed';
+        }
+
+        // Hanya Admin yang bisa mengedit biodata kependudukan
+        if ($user->isAdmin() && $user->warga) {
+            $wargaRules = [
+                'nik' => 'required|numeric|digits:16|unique:warga,nik,' . $user->warga_id,
+                'nama_lengkap' => 'required|string|max:255',
+                'tempat_lahir' => 'required|string|max:100',
+                'tanggal_lahir' => 'required|date',
+                'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
+                'agama' => 'nullable|in:Islam,Kristen,Katolik,Hindu,Buddha,Konghucu',
+                'pendidikan' => 'nullable|string|max:50',
+                'jenis_pekerjaan' => 'nullable|string|max:100',
+                'alamat' => 'nullable|string',
+            ];
+            $rules = array_merge($rules, $wargaRules);
+        }
+
+        $validated = $request->validate($rules);
+
+        // Update User (Account Info)
+        $userData = [];
+        
+        if ($user->isAdmin()) {
+            $userData['name'] = $validated['name'];
+            $userData['email'] = $validated['email'];
+            $userData['phone'] = $validated['phone'];
+        }
+
+        if ($request->filled('password')) {
+            $userData['password'] = Hash::make($validated['password']);
+        }
+
+        if (!empty($userData)) {
+            $user->update($userData);
+        }
+
+        // Update Warga (Hanya jika Admin)
+        if ($user->isAdmin() && $user->warga) {
+            $wargaData = [
+                'nik' => $validated['nik'],
+                'nama_lengkap' => $validated['nama_lengkap'],
+                'tempat_lahir' => $validated['tempat_lahir'],
+                'tanggal_lahir' => $validated['tanggal_lahir'],
+                'jenis_kelamin' => $validated['jenis_kelamin'],
+                'agama' => $validated['agama'] ?? $user->warga->agama,
+                'pendidikan' => $validated['pendidikan'] ?? $user->warga->pendidikan,
+                'jenis_pekerjaan' => $validated['jenis_pekerjaan'] ?? $user->warga->jenis_pekerjaan,
+                'alamat' => $validated['alamat'] ?? $user->warga->alamat,
+            ];
+            $user->warga->update($wargaData);
+        }
+
+        $this->logActivity("Memperbarui profil mandiri");
+
+        return redirect()->route('profile')->with('success', 'Profil Anda berhasil diperbarui!');
+    }
+
+    /**
      * Helper method to log activity
      */
     private function logActivity($aktivitas)
     {
-        LogAktivitas::create([
-            'user_id' => auth()->id(),
-            'aktivitas' => $aktivitas,
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-        ]);
+
     }
 }

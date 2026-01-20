@@ -151,16 +151,7 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="no_hp" class="form-label">No. HP</label>
-                                <input type="tel" class="form-control @error('no_hp') is-invalid @enderror" id="no_hp"
-                                    name="no_hp" value="{{ old('no_hp') }}">
-                                @error('no_hp')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-12 mb-3">
                                 <label for="kartu_keluarga_id" class="form-label">Kartu Keluarga</label>
                                 <select class="form-control @error('kartu_keluarga_id') is-invalid @enderror"
                                     id="kartu_keluarga_id" name="kartu_keluarga_id">
