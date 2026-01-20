@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('warga_id')->nullable()->constrained('warga')->onDelete('set null');
             $table->string('name');
+            $table->string('nik', 20)->unique()->nullable();
             $table->string('email')->unique();
             $table->string('password');
             $table->string('phone', 20)->nullable();

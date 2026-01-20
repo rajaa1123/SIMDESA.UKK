@@ -5,35 +5,74 @@
     <title>{{ $layanan->nama_layanan }}</title>
     <style>
         @page {
-            margin: 1.5cm 2cm;
+            margin: 1.2cm 1.5cm;
         }
         body {
             font-family: 'Times New Roman', serif;
-            font-size: 12pt;
-            line-height: 1.5;
-            color: #000;
-        }
-        /* Mode Kompak untuk Surat Panjang */
-        body.compact {
             font-size: 11pt;
-            line-height: 1.2;
+            line-height: 1.4;
+            color: #000;
+            margin: 0;
+            padding: 0;
         }
-        body.compact .kop-surat {
-            margin-bottom: 10px;
+
+        /* --- Sizing Classes --- */
+        
+        /* Extra Compact: For very long letters (Nikah, Pindah, etc) */
+        body.extra-compact { 
+            font-size: 9pt !important; 
+            line-height: 1.1 !important; 
         }
-        body.compact h1 {
-            font-size: 12pt;
-            margin: 10px 0 2px 0;
+        body.extra-compact .kop-surat { margin-bottom: 5px !important; padding-bottom: 2px !important; min-height: 85px !important; }
+        body.extra-compact .logo { width: 85px !important; }
+        body.extra-compact h1 { font-size: 11pt !important; margin: 3px 0 1px 0 !important; }
+        body.extra-compact .content { margin: 3px 0 !important; }
+        body.extra-compact table { margin-bottom: 3px !important; }
+        body.extra-compact table td { padding: 0px 2px !important; }
+        body.extra-compact p { margin: 2px 0 !important; }
+        body.extra-compact .ttd { margin-top: 10px !important; }
+
+        /* Compact: For long letters (SKCK, Domisili with many fields) */
+        body.compact { 
+            font-size: 10.5pt !important; 
+            line-height: 1.25 !important; 
         }
-        body.compact .content {
-            margin: 10px 0;
+        body.compact .kop-surat { margin-bottom: 10px !important; padding-bottom: 4px !important; min-height: 95px !important; }
+        body.compact .logo { width: 95px !important; }
+        body.compact h1 { font-size: 12pt !important; margin: 8px 0 3px 0 !important; }
+        body.compact .content { margin: 10px 0 !important; }
+        body.compact table { margin-bottom: 8px !important; }
+        body.compact table td { padding: 2px 2px !important; }
+        body.compact .ttd { margin-top: 20px !important; }
+
+        /* Standard: Default sizing */
+        body.standard { 
+            font-size: 11.5pt !important; 
+            line-height: 1.5 !important; 
         }
-        body.compact table td {
-            padding: 2px 2px;
+        body.standard table { margin-bottom: 15px !important; }
+        body.standard table td { padding: 4px 2px !important; }
+        
+        /* Relaxed: For shorter letters (Legalisasi, Beda Nama) */
+        body.relaxed { 
+            font-size: 12.5pt !important; 
+            line-height: 1.7 !important; 
         }
-        body.compact .ttd {
-            margin-top: 20px;
+        body.relaxed .content { margin: 30px 0 !important; }
+        body.relaxed table { margin-bottom: 20px !important; }
+        body.relaxed table td { padding: 6px 2px !important; }
+        body.relaxed .ttd { margin-top: 60px !important; }
+
+        /* Extra Relaxed: For very short letters */
+        body.extra-relaxed { 
+            font-size: 14pt !important; 
+            line-height: 1.9 !important; 
         }
+        body.extra-relaxed .kop-surat { margin-bottom: 40px !important; }
+        body.extra-relaxed .content { margin: 50px 0 !important; }
+        body.extra-relaxed table { margin-bottom: 35px !important; }
+        body.extra-relaxed table td { padding: 10px 2px !important; }
+        body.extra-relaxed .ttd { margin-top: 100px !important; }
 
         .header {
             text-align: center;
@@ -93,7 +132,7 @@
         }
     </style>
 </head>
-<body class="@yield('compact_class')">
+<body class="{{ $layout_class ?? 'standard' }}">
     {{-- KOP SURAT --}}
     <div class="kop-surat">
         {{-- Logo --}}

@@ -1,6 +1,6 @@
 @extends('surat.base')
 
-@section('compact_class', 'compact')
+
 
 @section('content')
 <p>Yang bertanda tangan di bawah ini Kepala Desa {{ $kelurahan }}, Kecamatan {{ $kecamatan }}, Kabupaten {{ $kabupaten }}, dengan ini menerangkan bahwa:</p>

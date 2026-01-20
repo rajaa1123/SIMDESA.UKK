@@ -789,7 +789,7 @@
                     <div class="card news-card">
                         <span class="news-category">{{ $berita->kategori }}</span>
                         @if($berita->gambar)
-                            <img src="{{ Storage::url($berita->gambar) }}" class="card-img-top news-image" alt="{{ $berita->judul }}">
+                            <img src="{{ asset('storage/' . $berita->gambar) }}" class="card-img-top news-image" alt="{{ $berita->judul }}">
                         @else
                             <div class="bg-secondary d-flex align-items-center justify-content-center news-image">
                                 <i class="fas fa-image fa-3x text-white-50"></i>

@@ -12,7 +12,7 @@
         <li class="nav-item">
             <a class="nav-link {{ request()->is('dashboard') ? 'active' : '' }}" 
                href="{{ route('dashboard') }}">
-                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                <i class="fas fa-tachometer-alt me-2"></i>Beranda
             </a>
         </li>
         

@@ -89,7 +89,7 @@ class SuratController extends Controller
         ]);
         
         return redirect()->route('permohonan.show', $permohonan)
-            ->with('success', 'Surat berhasil diterbitkan dan dapat didownload oleh warga.');
+            ->with('success', 'Surat berhasil diterbitkan dan dikirim ke kepala desa untuk ditandatangani .');
     }
 
     /**
@@ -158,6 +158,7 @@ class SuratController extends Controller
             'kades_signature_qr' => $this->getSignatureQrBase64($permohonan),
             'kades_signature_qr_raw' => $this->getSignatureQrRaw($permohonan),
             'logo_base64' => $this->getLogoBase64(),
+            'layout_class' => $this->getLayoutClass($permohonan->layanan->template_slug, $permohonan->form_data),
         ];
     }
 
@@ -404,5 +405,39 @@ class SuratController extends Controller
         $tahun = now()->year;
         
         return "{$counter}/{$kode}/{$desa}/{$bulan}/{$tahun}";
+    }
+
+    /**
+     * Determine layout scaling class based on template and content density
+     */
+    private function getLayoutClass($templateSlug, $formData)
+    {
+        // Very Long Templates
+        $extraCompact = [
+            'pengantar-nikah', 'pindah-datang', 'pindah-tempat', 
+            'akte-kelahiran', 'akte-kematian', 'ahli-waris'
+        ];
+        
+        // Moderately Long Templates
+        $compact = [
+            'domisili', 'skck', 'sktm', 'ijin-keramaian', 
+            'riwayat-tanah', 'kematian'
+        ];
+        
+        // Very Short Templates
+        $extraRelaxed = [
+            'legalisasi', 'beda-nama', 'kia', 'ktp', 'kk', 'peduli-dilan'
+        ];
+        
+        if (in_array($templateSlug, $extraCompact)) return 'extra-compact';
+        if (in_array($templateSlug, $compact)) return 'compact';
+        if (in_array($templateSlug, $extraRelaxed)) return 'extra-relaxed';
+        
+        // Default heuristic based on form data fields count
+        $fieldCount = count($formData ?? []);
+        if ($fieldCount > 10) return 'compact';
+        if ($fieldCount < 5) return 'relaxed';
+        
+        return 'standard';
     }
 }

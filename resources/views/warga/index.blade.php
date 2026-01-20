@@ -5,28 +5,7 @@
 @section('content')
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h2">Data Warga</h1>
-    @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="fas fa-check-circle"></i> {{ session('success') }}
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-@endif
 
-@if($errors->any())
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <i class="fas fa-exclamation-triangle"></i> Terdapat kesalahan dalam input data:
-        <ul class="mb-0">
-            @foreach($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-@endif
     <div class="btn-toolbar mb-2 mb-md-0">
         <a href="{{ route('warga.create') }}" class="btn btn-success">
             <i class="fas fa-user-plus me-1"></i>Tambah Warga
@@ -94,7 +73,7 @@
                                 {{ $warga->tempat_lahir }}, 
                                 {{ \Carbon\Carbon::parse($warga->tanggal_lahir)->format('d-m-Y') }}
                             </td>
-                            <td>{{ $warga->phone ?? '-' }}</td>
+                            <td>{{ $warga->no_hp ?? '-' }}</td>
                             <td>
                                 <span class="badge bg-{{ $warga->status_hidup == 'Hidup' ? 'success' : 'danger' }}">
                                     {{ $warga->status_hidup }}

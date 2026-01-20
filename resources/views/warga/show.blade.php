@@ -81,7 +81,7 @@
                     </tr>
                     <tr>
                         <th>No. HP</th>
-                        <td>{{ $warga->phone ?? '-' }}</td>
+                        <td>{{ $warga->no_hp ?? '-' }}</td>
                     </tr>
                     <tr>
                         <th>Status Hidup</th>

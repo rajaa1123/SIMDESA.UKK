@@ -38,7 +38,7 @@ class WargaController extends Controller
             'status_hidup' => 'nullable|string',
             'status_domisili' => 'nullable|string',
             'status_perkawinan' => 'nullable|in:Belum Menikah,Menikah,Cerai Hidup,Cerai Mati',
-            'no_hp' => 'nullable|string|max:20',
+
             'kartu_keluarga_id' => 'nullable|exists:kartu_keluarga,id',
         ], [
             'nik.required' => 'NIK wajib diisi',
@@ -83,7 +83,7 @@ class WargaController extends Controller
             'status_hidup' => 'nullable|string',
             'status_domisili' => 'nullable|string',
             'status_perkawinan' => 'nullable|in:Belum Menikah,Menikah,Cerai Hidup,Cerai Mati',
-            'no_hp' => 'nullable|string|max:20',
+
             'kartu_keluarga_id' => 'nullable|exists:kartu_keluarga,id',
         ]);
 

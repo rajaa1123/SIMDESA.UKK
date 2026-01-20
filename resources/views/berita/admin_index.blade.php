@@ -18,6 +18,7 @@
             <table class="table table-hover align-middle">
                 <thead class="table-light">
                     <tr>
+                        <th>Gambar</th>
                         <th>Judul</th>
                         <th>Kategori</th>
                         <th>Penulis</th>
@@ -29,6 +30,15 @@
                 <tbody>
                     @forelse($beritas as $item)
                     <tr>
+                        <td>
+                            @if($item->gambar)
+                                <img src="{{ asset('storage/' . $item->gambar) }}" class="img-thumbnail" style="width: 60px; height: 40px; object-fit: cover;">
+                            @else
+                                <div class="bg-light text-muted d-flex align-items-center justify-content-center border rounded" style="width: 60px; height: 40px;">
+                                    <i class="fas fa-image small text-muted"></i>
+                                </div>
+                            @endif
+                        </td>
                         <td>
                             <div class="fw-bold">{{ $item->judul }}</div>
                             <small class="text-muted">Slug: {{ $item->slug }}</small>
@@ -67,7 +77,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="text-center py-4">Belum ada data berita.</td>
+                        <td colspan="7" class="text-center py-4">Belum ada data berita.</td>
                     </tr>
                     @endforelse
                 </tbody>

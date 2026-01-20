@@ -14,6 +14,7 @@
                 <a href="{{ route('berita.index') }}" class="btn btn-outline-primary {{ !request('kategori') ? 'active' : '' }}">Semua</a>
                 <a href="{{ route('berita.index', ['kategori' => 'Berita']) }}" class="btn btn-outline-primary {{ request('kategori') == 'Berita' ? 'active' : '' }}">Berita</a>
                 <a href="{{ route('berita.index', ['kategori' => 'Pengumuman']) }}" class="btn btn-outline-primary {{ request('kategori') == 'Pengumuman' ? 'active' : '' }}">Pengumuman</a>
+                <a href="{{ route('berita.index', ['kategori' => 'Kegiatan']) }}" class="btn btn-outline-primary {{ request('kategori') == 'Kegiatan' ? 'active' : '' }}">Kegiatan</a>
             </div>
         </div>
     </div>

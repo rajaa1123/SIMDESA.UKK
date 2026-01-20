@@ -17,7 +17,13 @@ class BeritaController extends Controller
             return view('berita.admin_index', compact('beritas'));
         }
         
-        $beritas = Berita::with('user')->whereNotNull('published_at')->latest()->paginate(9);
+        $query = Berita::with('user')->whereNotNull('published_at');
+
+        if ($request->has('kategori')) {
+            $query->where('kategori', $request->kategori);
+        }
+
+        $beritas = $query->latest()->paginate(9);
         return view('berita.index', compact('beritas'));
     }
 

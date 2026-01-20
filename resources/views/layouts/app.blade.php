@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="manifest" href="{{ asset('manifest.json') }}">
     <meta name="theme-color" content="#2d7d3e">
-    <title>SIMDESA - @yield('title', 'Dashboard')</title>
+    <title>SIMDESA - @yield('title', 'Beranda')</title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -235,13 +235,13 @@
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
                         <li><h6 class="dropdown-header">Akun Saya</h6></li>
-                        <li><a class="dropdown-item" href="{{ route('profile') }}"><i class="fas fa-user me-2 text-muted"></i>Profile</a></li>
+                        <li><a class="dropdown-item" href="{{ route('profile') }}"><i class="fas fa-user me-2 text-muted"></i>Profil</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <form action="{{ route('logout') }}" method="POST">
                                 @csrf
                                 <button type="submit" class="dropdown-item text-danger">
-                                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                    <i class="fas fa-sign-out-alt me-2"></i>Keluar
                                 </button>
                             </form>
                         </li>

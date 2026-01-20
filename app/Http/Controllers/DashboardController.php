@@ -182,6 +182,20 @@ class DashboardController extends Controller
      */
     public function landing()
     {
+        if (auth()->check()) {
+            $previous = url()->previous();
+            $baseUrl = url('/');
+            
+            // Hanya redirect back jika berasal dari domain yang sama dan bukan dari halaman publik (/) atau login
+            if ($previous && \Illuminate\Support\Str::startsWith($previous, $baseUrl) && 
+                $previous !== $baseUrl && 
+                $previous !== url()->current() && 
+                !str_contains($previous, '/login')) {
+                return redirect()->back();
+            }
+            
+            return redirect()->route('dashboard');
+        }
         $stats = [
             'total_layanan' => Layanan::count() ?: 20, // Fallback ke 20 jika kosong
             'total_warga' => Warga::count() ?: 1000,
