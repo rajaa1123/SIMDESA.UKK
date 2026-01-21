@@ -15,6 +15,12 @@ class ReCaptcha implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
+        // Debug mode: bypass reCAPTCHA validation di localhost
+        if (app()->environment('local') && request()->getHost() === 'localhost') {
+            \Log::info('reCAPTCHA bypassed in debug mode');
+            return;
+        }
+
         $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
             'secret' => config('services.recaptcha.secret_key'),
             'response' => $value,

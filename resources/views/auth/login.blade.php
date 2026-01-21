@@ -184,6 +184,8 @@
                                 </div>
 
                                 <div class="mb-3">
+                                    {{-- DEBUG: Show site key value --}}
+                                    <!-- Site Key Debug: '{{ config('services.recaptcha.site_key') }}' -->
                                     <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site_key') }}"></div>
                                     @error('g-recaptcha-response')
                                         <div class="invalid-feedback d-block small">{{ $message }}</div>
@@ -212,6 +214,65 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Debug reCAPTCHA Widget
+        console.log('=== DEBUG reCAPTCHA ===');
+        
+        // 1. Check element ada atau tidak
+        const captchaElement = document.querySelector('.g-recaptcha');
+        console.log('1. Element .g-recaptcha:', captchaElement);
+        
+        if (captchaElement) {
+            console.log('   - data-sitekey:', captchaElement.getAttribute('data-sitekey'));
+            console.log('   - innerHTML:', captchaElement.innerHTML);
+            console.log('   - parent:', captchaElement.parentElement);
+        }
+        
+        // 2. Check site key value
+        const siteKey = "{{ config('services.recaptcha.site_key') }}";
+        console.log('2. Site Key dari config:', siteKey);
+        console.log('   - Valid format?', siteKey.length === 40);
+        
+        // 3. Check API script loaded
+        console.log('3. grecaptcha object:', typeof grecaptcha !== 'undefined' ? 'LOADED ✓' : 'NOT LOADED ✗');
+        
+        // 4. Try manual render
+        if (typeof grecaptcha !== 'undefined' && siteKey && captchaElement) {
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('4. Attempting manual grecaptcha.render()...');
+                try {
+                    grecaptcha.render('.g-recaptcha', {
+                        'sitekey': siteKey,
+                        'theme': 'light'
+                    });
+                    console.log('   - Render SUCCESS ✓');
+                } catch(error) {
+                    console.error('   - Render ERROR:', error.message);
+                }
+            });
+        } else {
+            console.log('4. Cannot render - Missing:', {
+                'grecaptcha': typeof grecaptcha,
+                'siteKey': siteKey ? 'YES' : 'NO',
+                'element': captchaElement ? 'YES' : 'NO'
+            });
+        }
+        
+        // 5. Check CSS computed styles
+        setTimeout(() => {
+            if (captchaElement) {
+                const styles = window.getComputedStyle(captchaElement);
+                console.log('5. CSS Styles:', {
+                    'display': styles.display,
+                    'visibility': styles.visibility,
+                    'opacity': styles.opacity,
+                    'height': styles.height,
+                    'width': styles.width
+                });
+            }
+        }, 2000);
+    </script>
     
     @if(session('unlock_at'))
     <script>
